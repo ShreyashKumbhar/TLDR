@@ -1,0 +1,80 @@
+package com.tldr.summary.controller;
+
+import com.tldr.summary.dto.SummaryDTO;
+import com.tldr.summary.model.Summary;
+import com.tldr.summary.service.SummaryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/summaries")
+@CrossOrigin(origins = "*")
+public class SummaryController {
+    
+    @Autowired
+    private SummaryService summaryService;
+    
+    @PostMapping
+    public ResponseEntity<SummaryDTO> createSummary(@RequestBody Summary summary) {
+        SummaryDTO createdSummary = summaryService.createSummary(summary);
+        return new ResponseEntity<>(createdSummary, HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<SummaryDTO> getSummaryById(@PathVariable Long id) {
+        SummaryDTO summary = summaryService.getSummaryById(id);
+        return summary != null ? ResponseEntity.ok(summary) : ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping
+    public ResponseEntity<Page<SummaryDTO>> getAllSummaries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(summaryService.getAllSummaries(page, size));
+    }
+    
+    @GetMapping("/top")
+    public ResponseEntity<Page<SummaryDTO>> getTopSummaries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(summaryService.getTopSummaries(page, size));
+    }
+    
+    @GetMapping("/tags")
+    public ResponseEntity<Page<SummaryDTO>> getSummariesByTags(
+            @RequestParam List<String> tags,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(summaryService.getSummariesByTags(tags, page, size));
+    }
+    
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<SummaryDTO>> getSummariesByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(summaryService.getSummariesByUser(userId, page, size));
+    }
+    
+    @GetMapping("/trending")
+    public ResponseEntity<List<SummaryDTO>> getTrendingDigest() {
+        return ResponseEntity.ok(summaryService.getTrendingDigest());
+    }
+    
+    @PutMapping("/{id}/votes")
+    public ResponseEntity<SummaryDTO> updateVoteCount(@PathVariable Long id, @RequestParam Integer change) {
+        SummaryDTO summary = summaryService.updateVoteCount(id, change);
+        return summary != null ? ResponseEntity.ok(summary) : ResponseEntity.notFound().build();
+    }
+    
+    @PutMapping("/{id}/comments")
+    public ResponseEntity<SummaryDTO> updateCommentCount(@PathVariable Long id, @RequestParam Integer change) {
+        SummaryDTO summary = summaryService.updateCommentCount(id, change);
+        return summary != null ? ResponseEntity.ok(summary) : ResponseEntity.notFound().build();
+    }
+}

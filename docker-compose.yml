@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: ./backend/user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
+  summary-service:
+    build:
+      context: ./backend/summary-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
+  vote-service:
+    build:
+      context: ./backend/vote-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
+  comment-service:
+    build:
+      context: ./backend/comment-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
+  saved-service:
+    build:
+      context: ./backend/saved-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - user-service
+      - summary-service
+      - vote-service
+      - comment-service
+      - saved-service
+    networks:
+      - tldr-network
+
+networks:
+  tldr-network:
+    driver: bridge
