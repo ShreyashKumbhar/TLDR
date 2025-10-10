@@ -75,6 +75,12 @@ TLDR/
 └── README.md
 ```
 
+## Documentation
+
+- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in minutes
+- **[Architecture](ARCHITECTURE.md)** - System design and data flow
+- **[Contributing](CONTRIBUTING.md)** - How to contribute to the project
+
 ## Getting Started
 
 ### Prerequisites
@@ -121,6 +127,17 @@ npm start
 ```
 
 The frontend will be available at http://localhost:3000
+
+### Sample Data
+
+To populate the application with sample data for testing:
+
+```bash
+# Make sure all services are running first
+./scripts/init-sample-data.sh
+```
+
+This will create sample users, summaries, votes, and comments to help you explore the application.
 
 ### Running with Docker
 
