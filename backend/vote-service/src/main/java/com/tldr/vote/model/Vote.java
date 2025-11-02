@@ -26,7 +26,7 @@ public class Vote {
     @Column(name = "summary_id", nullable = false)
     private Long summaryId;
     
-    @Column(nullable = false)
+    @Column(name = "vote_value", nullable = false)
     private Integer value; // 1 for upvote, -1 for downvote
     
     @Column(name = "created_at")
