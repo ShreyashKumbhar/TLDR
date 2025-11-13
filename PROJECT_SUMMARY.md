@@ -25,9 +25,14 @@ TLDR/
 ## Services Implemented
 
 ### 1. User Service (Port 8081)
-**Purpose:** User management and karma tracking
+**Purpose:** User management, authentication, and karma tracking
 
 **Endpoints:**
+- POST /api/auth/signup - Register account (returns JWT + profile)
+- POST /api/auth/login - Authenticate and receive JWT
+- POST /api/auth/password/reset-request - Request password reset token
+- POST /api/auth/password/reset-confirm - Reset password using token
+- GET /api/auth/me - Fetch profile for current JWT
 - POST /api/users - Create user
 - GET /api/users/{id} - Get user by ID
 - GET /api/users/username/{username} - Get user by username
@@ -35,9 +40,10 @@ TLDR/
 - PUT /api/users/{id}/karma - Update user karma
 
 **Features:**
-- User registration
-- User profiles
-- Karma system
+- Secure signup/login with JWT authentication
+- BCrypt password hashing with validation & sanitization
+- Password reset token lifecycle management
+- User profiles and karma system
 - H2 in-memory database
 
 ### 2. Summary Service (Port 8082)
@@ -110,15 +116,20 @@ TLDR/
 
 ### Pages
 1. **HomePage** - Browse all summaries with sorting (recent/top)
-2. **SubmitPage** - Form to submit new summaries
+2. **SubmitPage** - Form to submit new summaries (auth required)
 3. **TrendingPage** - View trending summaries from last 24 hours
+4. **LoginPage** - Authenticate existing users with client-side validation
+5. **SignupPage** - Register new users with helpful validation hints
+6. **ForgotPasswordPage** - Start password reset flow
+7. **ResetPasswordPage** - Complete password reset using token
 
 ### Components
-1. **Header** - Navigation bar with links
-2. **SummaryCard** - Display individual summary with voting
+1. **Header** - Navigation bar with auth-aware actions
+2. **SummaryCard** - Display individual summary with voting (auth-aware)
+3. **AuthContext** - React context for session and token management
 
 ### Services
-- **API Service** - Centralized API communication layer
+- **API Service** - Centralized API communication layer with auth helpers
 
 ## Key Features Implemented
 
@@ -129,6 +140,7 @@ TLDR/
 - [x] Tagging by topic
 - [x] Save summaries for later
 - [x] Daily trending digest generation
+- [x] Secure authentication with password recovery
 
 ### ✅ Technical Features
 - [x] Microservices architecture
@@ -141,6 +153,7 @@ TLDR/
 - [x] CORS configuration
 - [x] Pagination
 - [x] Data validation
+- [x] JWT-based authentication with BCrypt hashing
 
 ### ✅ Developer Experience
 - [x] Complete documentation suite
@@ -179,10 +192,19 @@ TLDR/
 ```java
 - id: Long
 - username: String (unique)
-- email: String
-- password: String
+- email: String (unique)
+- password: String (hashed)
 - karma: Integer
 - createdAt: LocalDateTime
+```
+
+### PasswordResetToken
+```java
+- id: Long
+- token: String (unique)
+- user: User
+- expiresAt: LocalDateTime
+- used: Boolean
 ```
 
 ### Summary
@@ -285,7 +307,7 @@ curl http://localhost:8082/api/summaries/trending
 
 ## Future Enhancements
 
-- User authentication (JWT/OAuth2)
+- Multi-factor authentication and refresh tokens
 - Search functionality
 - Real-time notifications
 - Email digest subscriptions
@@ -304,8 +326,8 @@ curl http://localhost:8082/api/summaries/trending
 ## Success Metrics
 
 ✅ **5 microservices** fully implemented
-✅ **15+ REST endpoints** across all services
-✅ **3 React pages** with routing
+✅ **20+ REST endpoints** across all services
+✅ **7 React pages** with authentication flows
 ✅ **100% Docker support** for deployment
 ✅ **Complete documentation** suite (4 files)
 ✅ **Sample data script** for testing

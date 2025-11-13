@@ -39,11 +39,17 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .header h1 {
   font-size: 24px;
   font-weight: bold;
+}
+
+.logo-link {
+  color: inherit;
+  text-decoration: none;
 }
 
 .nav {
@@ -59,6 +65,21 @@ code {
 
 .nav a:hover {
   text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome-text {
+  color: #fff7e6;
+  font-weight: 500;
+}
+
+.logout-button {
+  min-width: 90px;
 }
 
 .summary-card {
@@ -95,6 +116,11 @@ code {
   padding: 5px 10px;
   border-radius: 4px;
   transition: all 0.2s;
+}
+
+.vote-button:disabled {
+  cursor: not-allowed;
+  color: #b1b1b1;
 }
 
 .vote-button:hover {
@@ -166,6 +192,10 @@ code {
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover {
@@ -178,6 +208,60 @@ code {
 
 .button-secondary:hover {
   background-color: #5a6268;
+}
+
+.button:disabled,
+.button.button-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.auth-container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.auth-card {
+  padding: 32px;
+}
+
+.auth-links {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #586069;
+}
+
+.link {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.form-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #d93025;
+}
+
+.success {
+  background-color: #e6ffed;
+  color: #1f7a1f;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #b2f5b2;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: #6a737d;
+  margin-top: 6px;
 }
 
 .form-group {
@@ -232,6 +316,10 @@ textarea.form-control {
 .comment-text {
   color: #586069;
   line-height: 1.4;
+}
+
+.auth-card .error {
+  margin-bottom: 16px;
 }
 
 .loading {

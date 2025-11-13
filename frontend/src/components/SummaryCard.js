@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import { voteService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function SummaryCard({ summary }) {
   const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
   const [userVote, setUserVote] = useState(0);
-  const currentUserId = 1; // Demo user ID
+  const { user } = useAuth();
+  const currentUserId = user?.id;
 
   const handleVote = async (value) => {
+    if (!currentUserId) {
+      alert('Please sign in to vote on summaries.');
+      return;
+    }
+
     try {
       if (userVote === value) {
-        // Remove vote
         await voteService.removeVote(currentUserId, summary.id);
         setUserVote(0);
-        setVoteCount(voteCount - value);
+        setVoteCount((prev) => prev - value);
       } else {
-        // Cast or change vote
         await voteService.castVote(currentUserId, summary.id, value);
-        setVoteCount(voteCount - userVote + value);
+        setVoteCount((prev) => prev - userVote + value);
         setUserVote(value);
       }
     } catch (error) {
@@ -39,16 +44,20 @@ function SummaryCard({ summary }) {
     <div className="summary-card">
       <div className="summary-header">
         <div className="vote-section">
-          <button 
+          <button
             className={`vote-button ${userVote === 1 ? 'active' : ''}`}
             onClick={() => handleVote(1)}
+            disabled={!currentUserId}
+            title={currentUserId ? 'Upvote' : 'Sign in to vote'}
           >
             ▲
           </button>
           <span className="vote-count">{voteCount}</span>
-          <button 
+          <button
             className={`vote-button ${userVote === -1 ? 'active' : ''}`}
             onClick={() => handleVote(-1)}
+            disabled={!currentUserId}
+            title={currentUserId ? 'Downvote' : 'Sign in to vote'}
           >
             ▼
           </button>

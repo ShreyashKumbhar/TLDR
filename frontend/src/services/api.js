@@ -94,3 +94,24 @@ export const userService = {
   getUserByUsername: (username) => 
     userServiceClient.get(`/users/username/${username}`)
 };
+
+export const authService = {
+  signup: (payload) =>
+    userServiceClient.post('/auth/signup', payload),
+
+  login: (payload) =>
+    userServiceClient.post('/auth/login', payload),
+
+  requestPasswordReset: (payload) =>
+    userServiceClient.post('/auth/password/reset-request', payload),
+
+  resetPassword: (payload) =>
+    userServiceClient.post('/auth/password/reset-confirm', payload),
+
+  getCurrentUser: (token) =>
+    userServiceClient.get('/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+};

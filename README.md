@@ -11,6 +11,7 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - 🏷️ **Tag by Topic** - Organize summaries by topics (technology, politics, science, etc.)
 - 💾 **Save for Later** - Bookmark summaries to read later
 - 🔥 **Daily Trending Digest** - View the top summaries from the last 24 hours
+- 🔐 **User Accounts** - Secure signup, login, and password recovery workflows
 
 ### Technical Features
 - Microservices architecture using Spring Boot
@@ -18,6 +19,7 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - RESTful APIs for inter-service communication
 - H2 in-memory databases (easily replaceable with PostgreSQL/MySQL)
 - Docker support for easy deployment
+- JWT-based authentication with BCrypt password hashing and input validation
 
 ## Architecture
 
@@ -183,7 +185,15 @@ This will start all services and the frontend. Access the application at http://
 
 ### User Service (Port 8081)
 
-- `POST /api/users` - Create user
+#### Authentication
+- `POST /api/auth/signup` - Register a new account (returns JWT + user profile)
+- `POST /api/auth/login` - Sign in and receive JWT
+- `POST /api/auth/password/reset-request` - Start password recovery flow
+- `POST /api/auth/password/reset-confirm` - Complete password reset with token
+- `GET /api/auth/me` - Fetch the current authenticated user's profile
+
+#### User Management
+- `POST /api/users` - Create user (server-side hashing & validation)
 - `GET /api/users/{id}` - Get user by ID
 - `GET /api/users/username/{username}` - Get user by username
 - `PUT /api/users/{id}/karma?change={value}` - Update user karma
