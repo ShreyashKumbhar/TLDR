@@ -130,6 +130,17 @@ npm start
 
 The frontend will be available at http://localhost:3000
 
+### Preloaded Sample Data
+
+- **Demo accounts** (all use password `password123!`):
+  - `techfan@example.com`
+  - `newsjunkie@example.com`
+  - `sciencegeek@example.com`
+  - `healthhero@example.com`
+  - `marketwatcher@example.com`
+- **Curated summaries** covering AI breakthroughs, climate policy, space exploration, biotech, and clean tech funding are inserted during service startup so the home page and trending view are never empty.
+- Vote and comment counters are pre-populated to showcase engagement out of the box.
+
 ### Sample Data
 
 To populate the application with sample data for testing:
@@ -161,6 +172,8 @@ This will start all services and the frontend. Access the application at http://
 - `GET /api/summaries/{id}` - Get summary by ID
 - `POST /api/summaries` - Create new summary
 - `GET /api/summaries/tags?tags=tech,science` - Filter by tags
+
+> **Startup seed data:** Five featured summaries (AI, climate, space, health, clean tech) are inserted automatically when no content exists to ensure the home feed showcases recent stories immediately after deployment.
 
 ### Vote Service (Port 8083)
 

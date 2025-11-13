@@ -88,8 +88,9 @@ npm start
 1. Open http://localhost:3000 in your browser
 2. You should see the TLDR homepage
 3. Try these actions:
-   - Sign up for an account (or log in with a sample user, e.g., `techfan@example.com` / `password123`)
-   - Request a password reset to see the new recovery flow (token appears in user-service logs)
+   - Log in with a preloaded account such as `techfan@example.com` / `password123!`
+   - Explore the featured summaries already on the home page
+   - Request a password reset to see the recovery flow (token appears in user-service logs)
    - Click "Submit" to create a new summary (requires login)
    - Vote on summaries
    - View trending summaries
