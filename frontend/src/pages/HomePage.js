@@ -1,113 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import { summaryService } from '../services/api';
+// src/pages/HomePage.js
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import SummaryCard from '../components/SummaryCard';
+import { summaryService } from '../services/api';
+import StarsBackground from '../components/StarsBackground';
+import './HomePage.css';
 
-function HomePage() {
-  const PAGE_SIZE = 5;
+export default function HomePage() {
   const [summaries, setSummaries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
-  const [sortBy, setSortBy] = useState('recent');
-  const [pageMeta, setPageMeta] = useState({
-    first: true,
-    last: false,
-    totalPages: 1,
-    totalElements: 0
-  });
+
+  const loadSummaries = useCallback(async () => {
+    try {
+      const res = await summaryService.getAllSummaries();
+
+      // ⭐ THIS is the important fix:
+      const list = Array.isArray(res.data)
+        ? res.data
+        : res.data?.content || [];
+
+      setSummaries(list);
+    } catch (err) {
+      console.error('Failed to load summaries:', err);
+    }
+  }, []);
 
   useEffect(() => {
     loadSummaries();
-  }, [sortBy, page]);
-
-  const handleSortChange = (value) => {
-    if (sortBy === value) return;
-    setSortBy(value);
-    setPage(0);
-  };
-
-  const loadSummaries = async () => {
-    try {
-      setLoading(true);
-      const response = sortBy === 'top' 
-        ? await summaryService.getTopSummaries(page, PAGE_SIZE)
-        : await summaryService.getAllSummaries(page, PAGE_SIZE);
-
-      const { content = [], first, last, totalPages, totalElements } = response.data;
-
-      // If we navigated past the last page (e.g., after deleting a summary), move back.
-      if (content.length === 0 && totalElements > 0 && page > 0 && last) {
-        setPage((prev) => Math.max(prev - 1, 0));
-        return;
-      }
-
-      setSummaries(content);
-      setPageMeta({
-        first: Boolean(first),
-        last: Boolean(last),
-        totalPages: totalPages || 1,
-        totalElements: totalElements || 0
-      });
-    } catch (error) {
-      console.error('Error loading summaries:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadSummaries]);
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-        <button 
-          className={`button ${sortBy === 'recent' ? '' : 'button-secondary'}`}
-          onClick={() => handleSortChange('recent')}
-        >
-          Recent
-        </button>
-        <button 
-          className={`button ${sortBy === 'top' ? '' : 'button-secondary'}`}
-          onClick={() => handleSortChange('top')}
-        >
-          Top
-        </button>
-      </div>
+    <div className="home-page">
 
-      {loading ? (
-        <div className="loading">Loading summaries...</div>
-      ) : (
-        <>
-          {summaries.length === 0 ? (
-            <div className="summary-card">
-              <p>No summaries found on this page{page > 0 ? '. Try going back a page.' : ' yet.'}</p>
-            </div>
-          ) : (
-            summaries.map(summary => (
-              <SummaryCard key={summary.id} summary={summary} />
-            ))
-          )}
-          
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button 
-              className="button" 
-              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-              disabled={page === 0}
-            >
-              Previous
-            </button>
-            <button 
-              className="button" 
-              onClick={() => setPage((prev) => prev + 1)}
-              disabled={pageMeta.last || summaries.length === 0}
-            >
-              Next
-            </button>
-          </div>
-          <div style={{ marginTop: '10px', color: '#586069' }}>
-            Page {page + 1} of {Math.max(pageMeta.totalPages, 1)}
-          </div>
-        </>
-      )}
+      {/* Decorative floating doodles */}
+      <div className="home-doodle-left" />
+      <div className="home-doodle-right" />
+
+      <StarsBackground intensity={40} />
+
+      <motion.h1
+        className="home-title"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Latest Summaries
+      </motion.h1>
+
+      <motion.div
+        className="home-feed"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.12 }
+          }
+        }}
+      >
+
+        {summaries.map((s) => (
+          <motion.div
+            key={s.id}
+            variants={{
+              hidden: { opacity: 0, y: 16 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            className="feed-item"
+          >
+            <SummaryCard summary={s} onVote={loadSummaries} />
+          </motion.div>
+        ))}
+
+      </motion.div>
     </div>
   );
 }
-
-export default HomePage;

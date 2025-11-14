@@ -1,36 +1,149 @@
+// src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
-import SubmitPage from './pages/SubmitPage';
 import TrendingPage from './pages/TrendingPage';
+import ProfilePage from './pages/ProfilePage';
+import SubmitPage from './pages/SubmitPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import ProfilePage from './pages/ProfilePage';
+
 import { AuthProvider } from './context/AuthContext';
 
-function App() {
+/* ==========================================================
+   PAGE TRANSITION ANIMATION SET
+   ========================================================== */
+const pageTransition = {
+  initial: { opacity: 0, y: 16 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: "easeOut" }
+  },
+  exit: {
+    opacity: 0,
+    y: -14,
+    transition: { duration: 0.28, ease: "easeIn" }
+  }
+};
+
+export default function App() {
+  const location = useLocation();
+
   return (
-    <Router>
-      <AuthProvider>
-        <div className="App">
-          <Header />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/submit" element={<SubmitPage />} />
-            <Route path="/trending" element={<TrendingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+    <AuthProvider>
+      <div className="app-root">
+
+        {/* Sticky Blurred Header */}
+        <Header />
+
+        {/* Animated Route Outlet */}
+        <AnimatePresence mode="wait" initial={false}>
+          <Routes location={location} key={location.pathname}>
+
+            {/* HOME */}
+            <Route
+              path="/"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <HomePage />
+                </motion.div>
+              }
+            />
+
+            {/* TRENDING */}
+            <Route
+              path="/trending"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <TrendingPage />
+                </motion.div>
+              }
+            />
+
+            {/* SUBMIT */}
+            <Route
+              path="/submit"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <SubmitPage />
+                </motion.div>
+              }
+            />
+
+            {/* PROFILE */}
+            <Route
+              path="/profile"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <ProfilePage />
+                </motion.div>
+              }
+            />
+
+            {/* LOGIN */}
+            <Route
+              path="/login"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <LoginPage />
+                </motion.div>
+              }
+            />
+
+            {/* SIGNUP */}
+            <Route
+              path="/signup"
+              element={
+                <motion.div
+                  variants={pageTransition}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="fade-route"
+                >
+                  <SignupPage />
+                </motion.div>
+              }
+            />
+
           </Routes>
-        </div>
-      </AuthProvider>
-    </Router>
+        </AnimatePresence>
+
+      </div>
+    </AuthProvider>
   );
 }
-
-export default App;

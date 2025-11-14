@@ -1,0 +1,84 @@
+/* src/pages/HomePage.css */
+
+.home-page {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 0 60px;
+  position: relative;
+}
+
+/* Page Title */
+.home-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 22px;
+  padding-left: 4px;
+  position: relative;
+}
+
+/* Soft glowing underline */
+.home-title::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 110px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--muted), transparent);
+  border-radius: 6px;
+  opacity: 0.7;
+}
+
+/* Feed area */
+.home-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  z-index: 2;
+  position: relative;
+}
+
+/* Parallax scroll lift */
+.feed-item {
+  will-change: transform;
+  transition: transform 300ms ease;
+}
+
+.feed-item:hover {
+  transform: translateY(-4px);
+}
+
+/* Decorative doodles */
+.home-doodle-left,
+.home-doodle-right {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(
+    circle at 40% 40%,
+    rgba(134,134,172,0.12),
+    transparent 60%
+  );
+  z-index: 0;
+  filter: blur(6px);
+  opacity: 0.7;
+}
+
+.home-doodle-left {
+  top: 0;
+  left: -120px;
+}
+
+.home-doodle-right {
+  bottom: 40px;
+  right: -130px;
+}
+
+@media (max-width: 900px) {
+  .home-doodle-left,
+  .home-doodle-right {
+    display: none;
+  }
+}

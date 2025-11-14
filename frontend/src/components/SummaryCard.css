@@ -1,0 +1,154 @@
+/* src/components/SummaryCard.css */
+
+.summary-card {
+  display: block;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 18px;
+  min-height: 150px;
+  background: linear-gradient(
+      175deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 22px rgba(5, 4, 20, 0.6);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+/* Card parallax glow elements */
+.summary-card::before,
+.summary-card::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform var(--transition);
+}
+
+.summary-card::before {
+  top: -28%;
+  left: -18%;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle at 30% 30%, rgba(134,134,172,0.18), transparent 50%);
+}
+
+.summary-card::after {
+  bottom: -25%;
+  right: -16%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at 70% 70%, rgba(80,80,129,0.1), transparent 50%);
+}
+
+/* Hover movement */
+.summary-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 32px rgba(5,4,20,0.65);
+}
+
+.summary-card:hover::before { transform: translateY(-6px) scale(1.05); }
+.summary-card:hover::after { transform: translateY(6px) scale(1.05); }
+
+
+/* -------- INNER LAYOUT -------- */
+.summary-inner {
+  display: flex;
+  gap: 14px;
+}
+
+.vote-section {
+  margin-right: 6px;
+}
+
+.content-section {
+  flex: 1;
+}
+
+
+/* -------- TITLE -------- */
+.summary-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* -------- META -------- */
+.summary-meta {
+  font-size: 12px;
+  margin-top: 4px;
+  color: var(--muted-text);
+}
+
+.summary-meta strong {
+  color: var(--text);
+}
+
+/* -------- VOTE BADGE -------- */
+.vote-badge {
+  background: linear-gradient(90deg, rgba(134,134,172,0.12), rgba(80,80,129,0.06));
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+  min-width: 44px;
+  text-align: center;
+}
+
+
+/* -------- TEXT -------- */
+.summary-text {
+  color: var(--muted-text);
+  font-size: 14px;
+  margin-top: 10px;
+  max-height: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* -------- FOOTER -------- */
+.footer-row {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Tags */
+.tag {
+  background: linear-gradient(90deg, rgba(134,134,172,0.14), rgba(80,80,129,0.1));
+  padding: 6px 12px;
+  color: var(--muted-text);
+  border-radius: 999px;
+  font-size: 13px;
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: pointer;
+}
+
+.tag:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(80,80,129,0.22);
+  color: var(--text);
+}
+
+/* Buttons */
+.actions {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.small-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+}

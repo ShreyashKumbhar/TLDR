@@ -1,150 +1,146 @@
+// src/pages/SubmitPage.js
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { summaryService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import './SubmitPage.css';
+import StarsBackground from '../components/StarsBackground';
 
-function SubmitPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    originalUrl: '',
-    tags: ''
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+export default function SubmitPage() {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [tags, setTags] = useState("");
+  const [status, setStatus] = useState(null);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!user) {
-      navigate('/login', { state: { from: location.pathname } });
-      return;
-    }
-
-    setSubmitting(true);
-    setErrorMessage('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const tagsArray = formData.tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter((tag) => tag);
+      const payload = {
+        title,
+        content,
+        originalUrl,
+        tags: tags.split(',').map(t => t.trim()),
+      };
 
-      await summaryService.createSummary({
-        title: formData.title.trim(),
-        content: formData.content.trim(),
-        originalUrl: formData.originalUrl.trim(),
-        userId: user.id,
-        tags: tagsArray
-      });
+      await summaryService.createSummary(payload);
 
-      navigate('/', { replace: true });
-    } catch (error) {
-      console.error('Error creating summary:', error);
-      const message = error.response?.data?.message || 'Error creating summary. Please try again.';
-      setErrorMessage(message);
-    } finally {
-      setSubmitting(false);
+      setStatus("success");
+      setTitle("");
+      setContent("");
+      setOriginalUrl("");
+      setTags("");
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
     }
   };
-
-  if (!user) {
-    return (
-      <div className="container">
-        <div className="summary-card">
-          <h2 style={{ marginBottom: '16px' }}>Sign in to submit a summary</h2>
-          <p style={{ marginBottom: '20px', color: '#586069' }}>
-            You need an account to share new summaries with the community.
-          </p>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link to="/login" className="button">
-              Sign In
-            </Link>
-            <Link to="/signup" className="button button-secondary">
-              Create Account
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container">
-      <div className="summary-card">
-        <h2 style={{ marginBottom: '20px' }}>Submit a New Summary</h2>
+    <div className="submit-wrapper">
 
-        {errorMessage && <div className="error">{errorMessage}</div>}
+      {/* Floating stars */}
+      <StarsBackground intensity={28} />
 
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="title">Title</label>
-            <input
-              id="title"
-              type="text"
-              name="title"
-              className="form-control"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
+      {/* Doodle Background */}
+      <div className="submit-doodle-left" />
+      <div className="submit-doodle-right" />
 
-          <div className="form-group">
-            <label htmlFor="content">Summary (TLDR)</label>
-            <textarea
-              id="content"
-              name="content"
-              className="form-control"
-              value={formData.content}
-              onChange={handleChange}
-              placeholder="Provide a concise summary highlighting key points..."
-              required
-            />
-          </div>
+      {/* Page Title */}
+      <motion.h1
+        className="submit-title page-title soft-rise"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+        Submit a News Summary
+      </motion.h1>
 
-          <div className="form-group">
-            <label htmlFor="originalUrl">Original Article URL</label>
-            <input
-              id="originalUrl"
-              type="url"
-              name="originalUrl"
-              className="form-control"
-              value={formData.originalUrl}
-              onChange={handleChange}
-              required
-            />
-          </div>
+      {/* Form Card */}
+      <motion.form
+        className="submit-form glass-card fade-route"
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
+      >
 
-          <div className="form-group">
-            <label htmlFor="tags">Tags (comma-separated)</label>
-            <input
-              id="tags"
-              type="text"
-              name="tags"
-              className="form-control"
-              value={formData.tags}
-              onChange={handleChange}
-              placeholder="e.g., technology, politics, science"
-            />
-          </div>
+        {/* Title */}
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            className="input"
+            placeholder="Enter a short descriptive title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-          <button type="submit" className="button" disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Submit Summary'}
-          </button>
-        </form>
-      </div>
+        {/* Summary */}
+        <div className="form-group">
+          <label>Summary</label>
+          <textarea
+            className="input textarea"
+            placeholder="Write a concise news summary..."
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* URL */}
+        <div className="form-group">
+          <label>Original Article URL</label>
+          <input
+            className="input"
+            placeholder="https://example.com/news-article"
+            value={originalUrl}
+            onChange={e => setOriginalUrl(e.target.value)}
+          />
+        </div>
+
+        {/* Tags */}
+        <div className="form-group">
+          <label>Tags (comma separated)</label>
+          <input
+            className="input"
+            placeholder="technology, ai, space"
+            value={tags}
+            onChange={e => setTags(e.target.value)}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <motion.button
+          className="btn submit-btn"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+        >
+          Publish
+        </motion.button>
+
+        {/* Status Messages */}
+        {status === "success" && (
+          <motion.div
+            className="status success"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            Summary posted 🎉
+          </motion.div>
+        )}
+
+        {status === "error" && (
+          <motion.div
+            className="status error"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            Something went wrong 😕
+          </motion.div>
+        )}
+
+      </motion.form>
     </div>
   );
 }
-
-export default SubmitPage;

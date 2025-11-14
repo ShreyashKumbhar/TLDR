@@ -1,96 +1,71 @@
-import React, { useState } from 'react';
-import { voteService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+// src/components/SummaryCard.js
+import React from 'react';
+import './SummaryCard.css';
+import VoteButton from './VoteButton';
+import { motion } from 'framer-motion';
 
-function SummaryCard({ summary }) {
-  const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
-  const [userVote, setUserVote] = useState(0);
-  const { user } = useAuth();
-  const currentUserId = user?.id;
-
-  const handleVote = async (value) => {
-    if (!currentUserId) {
-      alert('Please sign in to vote on summaries.');
-      return;
-    }
-
-    try {
-      if (userVote === value) {
-        await voteService.removeVote(currentUserId, summary.id);
-        setUserVote(0);
-        setVoteCount((prev) => prev - value);
-      } else {
-        await voteService.castVote(currentUserId, summary.id, value);
-        setVoteCount((prev) => prev - userVote + value);
-        setUserVote(value);
-      }
-    } catch (error) {
-      console.error('Error voting:', error);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    
-    if (diffHours < 1) return 'just now';
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${Math.floor(diffHours / 24)}d ago`;
-  };
+export default function SummaryCard({ summary, onVote }) {
+  const { id, title, content, tags = [], userName, voteCount = 0, createdAt } = summary;
 
   return (
-    <div className="summary-card">
-      <div className="summary-header">
+    <motion.article
+      className="summary-card fade-in"
+      whileHover={{ scale: 1.015 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+    >
+      <div className="summary-inner">
+
+        {/* ---- LEFT: Vote Button ---- */}
         <div className="vote-section">
-          <button
-            className={`vote-button ${userVote === 1 ? 'active' : ''}`}
-            onClick={() => handleVote(1)}
-            disabled={!currentUserId}
-            title={currentUserId ? 'Upvote' : 'Sign in to vote'}
-          >
-            ▲
-          </button>
-          <span className="vote-count">{voteCount}</span>
-          <button
-            className={`vote-button ${userVote === -1 ? 'active' : ''}`}
-            onClick={() => handleVote(-1)}
-            disabled={!currentUserId}
-            title={currentUserId ? 'Downvote' : 'Sign in to vote'}
-          >
-            ▼
-          </button>
+          <VoteButton
+            initialValue={0}
+            summaryId={id}
+            onVote={(v) => onVote && onVote(v)}
+          />
         </div>
 
-        <div className="summary-content">
-          <h3 className="summary-title">{summary.title}</h3>
-          <p className="summary-text">{summary.content}</p>
-          
-          <div style={{ marginBottom: '10px' }}>
-            {summary.tags && summary.tags.map(tag => (
-              <span key={tag} className="tag">{tag}</span>
-            ))}
+        {/* ---- RIGHT: Content ---- */}
+        <div className="content-section">
+
+          {/* Title + Meta */}
+          <div className="title-row">
+            <div>
+              <div className="summary-title">{title}</div>
+              <div className="summary-meta">
+                by <strong>{userName || 'anonymous'}</strong> · {new Date(createdAt).toLocaleString()}
+              </div>
+            </div>
+
+            <div className="vote-badge">{voteCount}</div>
           </div>
 
-          <div className="summary-meta">
-            <span>{formatDate(summary.createdAt)}</span>
-            <span>•</span>
-            <span>{summary.commentCount || 0} comments</span>
-            <span>•</span>
-            <a 
-              href={summary.originalUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="original-link"
-            >
-              Read Full Article →
-            </a>
+          {/* Summary text */}
+          <p className="summary-text">
+            {content}
+          </p>
+
+          {/* Tags + Actions */}
+          <div className="footer-row">
+            <div className="tag-list">
+              {tags.map(t => (
+                <span className="tag" key={t}>#{t}</span>
+              ))}
+            </div>
+
+            <div className="actions">
+              <a href={summary.originalUrl || '#'} target="_blank" rel="noreferrer" className="btn btn-ghost small-btn">
+                Read Source
+              </a>
+              <a href={`/summaries/${id}`} className="btn small-btn">
+                Open
+              </a>
+            </div>
           </div>
+
         </div>
       </div>
-    </div>
+    </motion.article>
   );
 }
-
-export default SummaryCard;

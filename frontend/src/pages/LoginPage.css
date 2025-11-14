@@ -1,0 +1,164 @@
+/* ===========================
+   LOGIN PAGE — PREMIUM UI
+   =========================== */
+
+/* Main wrapper */
+.login-wrapper {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding-top: 90px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Glass card */
+.login-card,
+.glass-login {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 30px 34px;
+  border-radius: 20px;
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 34px rgba(5,4,20,0.65);
+  animation: softRise 600ms ease forwards;
+  opacity: 0;
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  margin-bottom: 22px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.015em;
+  position: relative;
+}
+
+.login-title::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--muted), transparent);
+  opacity: 0.7;
+}
+
+/* Form Layout */
+.login-form {
+  margin-top: 10px;
+}
+
+/* Inputs */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: var(--muted-text);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 15px;
+  color: var(--text);
+  transition: border var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+.input:focus {
+  outline: none;
+  border: 1px solid var(--muted);
+  box-shadow: 0 0 0 3px rgba(134,134,172,0.18);
+}
+
+/* Login Button */
+.login-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px !important;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+/* Error Message */
+.error-msg {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b;
+  animation: softRise 400ms ease;
+}
+
+/* Muted Links */
+.muted-links {
+  margin-top: 20px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.85;
+}
+
+.muted-links a {
+  color: var(--muted-text);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.muted-links a:hover {
+  color: var(--text);
+}
+
+/* Doodle Blobs */
+.login-doodle-left,
+.login-doodle-right {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  filter: blur(12px);
+  opacity: 0.75;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(134,134,172,0.14), transparent 70%);
+}
+
+.login-doodle-left {
+  top: 10px;
+  left: -130px;
+}
+
+.login-doodle-right {
+  bottom: 80px;
+  right: -120px;
+}
+
+@media (max-width: 850px) {
+  .login-doodle-left,
+  .login-doodle-right {
+    display: none;
+  }
+}
+
+/* Soft entrance animation */
+@keyframes softRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

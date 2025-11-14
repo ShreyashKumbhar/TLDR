@@ -1,113 +1,102 @@
+// src/pages/LoginPage.js
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import StarsBackground from '../components/StarsBackground';
+import './LoginPage.css';
 
-function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login, authError } = useAuth();
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [formErrors, setFormErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
-  const [generalError, setGeneralError] = useState('');
+export default function LoginPage() {
+  const { login } = useAuth();
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
-    setGeneralError('');
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState(null);
 
-  const validate = () => {
-    const errors = {};
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    }
-    if (!formData.password.trim()) {
-      errors.password = 'Password is required';
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!validate()) return;
-
-    setSubmitting(true);
-    setGeneralError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await login({
-        email: formData.email.trim(),
-        password: formData.password
-      });
-      const redirectTo = location.state?.from || '/';
-      navigate(redirectTo, { replace: true });
-    } catch (error) {
-      const message = authError || error.response?.data?.message || 'Unable to sign in.';
-      setGeneralError(message);
-    } finally {
-      setSubmitting(false);
+      await login({ email, password });
+      setStatus("success");
+    } catch {
+      setStatus("error");
     }
   };
 
   return (
-    <div className="container auth-container">
-      <div className="summary-card auth-card">
-        <h2 style={{ marginBottom: '20px' }}>Welcome Back</h2>
-        <p style={{ marginBottom: '20px', color: '#586069' }}>
-          Sign in to vote, comment, and submit summaries.
-        </p>
+    <div className="login-wrapper">
 
-        {generalError && <div className="error">{generalError}</div>}
+      {/* Floating Stars */}
+      <StarsBackground intensity={22} />
 
-        <form onSubmit={handleSubmit} noValidate>
+      {/* Doodle Decorations */}
+      <div className="login-doodle-left"></div>
+      <div className="login-doodle-right"></div>
+
+      {/* Glass Login Card */}
+      <motion.div
+        className="login-card glass-login soft-rise"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+
+        <h1 className="login-title">Welcome Back</h1>
+
+        <form className="login-form" onSubmit={handleSubmit}>
+
+          {/* Email */}
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label>Email</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-control"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={submitting}
+              className="input"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="you@example.com"
               required
             />
-            {formErrors.email && <span className="form-error">{formErrors.email}</span>}
           </div>
 
+          {/* Password */}
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label>Password</label>
             <input
-              id="password"
-              name="password"
+              className="input"
               type="password"
-              className="form-control"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={submitting}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••"
               required
             />
-            {formErrors.password && <span className="form-error">{formErrors.password}</span>}
           </div>
 
-          <button type="submit" className="button" disabled={submitting}>
-            {submitting ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+          {/* Submit Button */}
+          <motion.button
+            className="btn login-btn"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+          >
+            Sign In
+          </motion.button>
 
-        <div className="auth-links">
-          <Link to="/forgot-password" className="link">Forgot password?</Link>
-          <span>
-            Need an account?{' '}
-            <Link to="/signup" className="link">Create one</Link>
-          </span>
-        </div>
-      </div>
+          {/* Error */}
+          {status === "error" && (
+            <motion.div
+              className="error-msg"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              Invalid credentials 😕
+            </motion.div>
+          )}
+
+          {/* Links */}
+          <div className="muted-links">
+            <a href="/signup">Create account</a>
+            <a href="/forgot">Forgot password?</a>
+          </div>
+
+        </form>
+      </motion.div>
     </div>
   );
 }
-
-export default LoginPage;
-

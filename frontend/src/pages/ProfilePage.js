@@ -1,118 +1,114 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// src/pages/ProfilePage.js
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import StarsBackground from '../components/StarsBackground';
 import { useAuth } from '../context/AuthContext';
-import { summaryService } from '../services/api';
+import './ProfilePage.css';
 
-function ProfilePage() {
-  const navigate = useNavigate();
+export default function ProfilePage() {
   const { user } = useAuth();
-  const [summaries, setSummaries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [deleting, setDeleting] = useState(null);
+  const [karma] = useState(user?.karma || 0);
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login', { replace: true, state: { from: '/profile' } });
-      return;
+  // Level thresholds (gamified)
+  const levels = [
+    { level: 1, name: "Novice", color: "#7A7DBE", xp: 50 },
+    { level: 2, name: "Contributor", color: "#8BC28C", xp: 120 },
+    { level: 3, name: "Analyst", color: "#E6A56D", xp: 200 },
+    { level: 4, name: "Oracle", color: "#D96BD1", xp: 350 },
+    { level: 5, name: "Legend", color: "#FFDF72", xp: 500 }
+  ];
+
+  // Current level
+  const currentLevel = (() => {
+    let curr = levels[0];
+    for (let lvl of levels) {
+      if (karma >= lvl.xp) curr = lvl;
     }
-    const loadSummaries = async () => {
-      try {
-        setLoading(true);
-        const response = await summaryService.getSummariesByUserId(user.id);
-        setSummaries(response.data.content || []);
-      } catch (err) {
-        console.error('Error loading user summaries', err);
-        setError('Unable to load your submissions right now.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadSummaries();
-  }, [user, navigate]);
+    return curr;
+  })();
 
-  const handleDelete = async (summaryId) => {
-    if (!user) return;
-    const confirmed = window.confirm('Delete this summary? This action cannot be undone.');
-    if (!confirmed) return;
-    try {
-      setDeleting(summaryId);
-      await summaryService.deleteSummary(summaryId, user.id);
-      setSummaries((prev) => prev.filter((summary) => summary.id !== summaryId));
-    } catch (err) {
-      console.error('Error deleting summary', err);
-      alert('Unable to delete this summary. Please try again.');
-    } finally {
-      setDeleting(null);
-    }
-  };
-
-  if (!user) {
-    return null;
-  }
+  // Progress
+  const nextLevel = levels.find(l => l.xp > karma);
+  const xpForNext = nextLevel ? nextLevel.xp : currentLevel.xp;
+  const xpProgress = Math.min((karma / xpForNext) * 100, 100);
 
   return (
-    <div className="container">
-      <div className="profile-card">
-        <div>
-          <h2>{user.username}</h2>
-          <p>{user.email}</p>
-        </div>
-        <div className="profile-stats">
+    <div className="profile-page">
+
+      {/* Stars BG */}
+      <StarsBackground intensity={26} />
+
+      {/* Doodles */}
+      <div className="profile-doodle-left"></div>
+      <div className="profile-doodle-right"></div>
+
+      <motion.div
+        className="glass-profile profile-card"
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+      >
+        {/* Top — Avatar + Name */}
+        <div className="profile-top">
+          <div className="avatar">
+            {user?.username?.charAt(0)?.toUpperCase() || "U"}
+          </div>
+
           <div>
-            <span className="profile-stat-label">Karma</span>
-            <span className="profile-stat-value">{user.karma ?? 0}</span>
-          </div>
-          <div>
-            <span className="profile-stat-label">Submissions</span>
-            <span className="profile-stat-value">{summaries.length}</span>
+            <h1 className="profile-name">{user?.username}</h1>
+            <div className="profile-email">{user?.email}</div>
           </div>
         </div>
-        <Link to="/submit" className="button">Submit a Summary</Link>
-      </div>
 
-      <div className="summary-card">
-        <div className="profile-submissions-header">
-          <h3>Your submissions</h3>
+        {/* Level Badge */}
+        <motion.div
+          className="level-badge"
+          style={{ background: currentLevel.color }}
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          Level {currentLevel.level} — {currentLevel.name}
+        </motion.div>
+
+        {/* XP Progress */}
+        <div className="xp-bar-wrapper">
+          <div className="xp-bar" style={{ width: xpProgress + "%" }}></div>
         </div>
 
-        {loading && <div className="loading">Loading your summaries...</div>}
-        {!loading && error && <div className="error">{error}</div>}
-        {!loading && !error && summaries.length === 0 && (
-          <div className="empty-state">
-            <p>You haven’t submitted anything yet.</p>
-            <Link to="/submit" className="button">Share your first summary</Link>
-          </div>
-        )}
+        <div className="xp-text">
+          {karma} XP
+          {nextLevel ? (
+            <> • {xpForNext - karma} XP to next level</>
+          ) : (
+            <> • Max Level</>
+          )}
+        </div>
 
-        {!loading && !error && summaries.length > 0 && (
-          <ul className="profile-submissions">
-            {summaries.map((summary) => (
-              <li key={summary.id} className="profile-submission">
-                <div>
-                  <h4>{summary.title}</h4>
-                  <p>{summary.content}</p>
-                  <div className="summary-meta">
-                    <span>{summary.voteCount || 0} votes</span>
-                    <span>•</span>
-                    <span>{summary.commentCount || 0} comments</span>
-                  </div>
-                </div>
-                <button
-                  className="button button-secondary"
-                  onClick={() => handleDelete(summary.id)}
-                  disabled={deleting === summary.id}
-                >
-                  {deleting === summary.id ? 'Deleting…' : 'Delete'}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        {/* Stats Grid */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-label">Karma</div>
+            <div className="stat-value">{karma}</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-label">Posts</div>
+            <div className="stat-value">{user?.totalPosts || 0}</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-label">Saved</div>
+            <div className="stat-value">{user?.savedCount || 0}</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-label">Votes</div>
+            <div className="stat-value">{user?.voteCount || 0}</div>
+          </div>
+        </div>
+
+      </motion.div>
     </div>
   );
 }
-
-export default ProfilePage;
-

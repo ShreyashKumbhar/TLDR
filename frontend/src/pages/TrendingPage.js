@@ -1,53 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { summaryService } from '../services/api';
+// src/pages/TrendingPage.js
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import SummaryCard from '../components/SummaryCard';
+import { summaryService } from '../services/api';
+import StarsBackground from '../components/StarsBackground';
+import './TrendingPage.css';
 
-function TrendingPage() {
+export default function TrendingPage() {
   const [trending, setTrending] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const loadTrending = useCallback(async () => {
+    try {
+      const res = await summaryService.getTrending();
+
+      // ⭐ FIX FOR PAGINATION SHAPE (same as HomePage)
+      const list = Array.isArray(res.data)
+        ? res.data
+        : res.data?.content || [];
+
+      setTrending(list);
+    } catch (err) {
+      console.error('Failed to load trending:', err);
+    }
+  }, []);
 
   useEffect(() => {
     loadTrending();
-  }, []);
-
-  const loadTrending = async () => {
-    try {
-      setLoading(true);
-      const response = await summaryService.getTrendingDigest();
-      setTrending(response.data);
-    } catch (error) {
-      console.error('Error loading trending:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadTrending]);
 
   return (
-    <div className="container">
-      <h2 style={{ marginBottom: '20px', color: '#24292e' }}>
-        🔥 Trending Today
-      </h2>
-      <p style={{ marginBottom: '20px', color: '#586069' }}>
-        Top summaries from the last 24 hours
-      </p>
+    <div className="trending-page">
 
-      {loading ? (
-        <div className="loading">Loading trending summaries...</div>
-      ) : (
-        <>
-          {trending.length === 0 ? (
-            <div className="summary-card">
-              No trending summaries yet. Be the first to submit!
-            </div>
-          ) : (
-            trending.map(summary => (
-              <SummaryCard key={summary.id} summary={summary} />
-            ))
-          )}
-        </>
-      )}
+      <StarsBackground intensity={26} />
+
+      <motion.h1
+        className="trending-title"
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        🔥 Trending (Last 24 Hours)
+      </motion.h1>
+
+      <div className="trending-feed">
+        {trending.map((s, index) => (
+          <motion.div
+            key={s.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.45,
+              ease: 'easeOut',
+              delay: index * 0.07
+            }}
+            className="t-feed-item"
+          >
+            <SummaryCard summary={s} onVote={loadTrending} />
+          </motion.div>
+        ))}
+      </div>
+
     </div>
   );
 }
-
-export default TrendingPage;

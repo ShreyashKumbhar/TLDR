@@ -1,0 +1,126 @@
+/* src/components/Header.css */
+
+/* ---------- GLOBAL HEADER CONTAINER ---------- */
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  background: rgba(15, 14, 71, 0.45); /* midnight glass */
+  border-bottom: 1px solid rgba(134, 134, 172, 0.12);
+  padding: 14px 26px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  animation: headerFade 0.6s ease-out;
+}
+
+@keyframes headerFade {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0px); }
+}
+
+.header-spacer {
+  height: 80px;
+}
+
+/* ---------- NAV LINKS ---------- */
+.header nav a {
+  position: relative;
+  color: var(--muted-text);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 6px;
+  border-radius: 4px;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.header nav a:hover {
+  color: var(--text);
+  opacity: 1;
+}
+
+/* Active underline effect */
+.header nav .active-nav {
+  color: var(--text);
+}
+
+.header nav .active-nav::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--indigo), var(--muted));
+  border-radius: 10px;
+  opacity: 1;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  background: linear-gradient(135deg, var(--indigo), var(--muted));
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(80, 80, 129, 0.35);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+.btn-ghost:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+/* ---------- NOTIFICATION BADGE ---------- */
+.notif-wrap {
+  position: relative;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(90deg, var(--muted), var(--indigo));
+  color: var(--text);
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 6px 12px rgba(10, 8, 30, 0.6);
+}
+
+.notif-badge {
+  animation: notifPulse 1.4s infinite;
+}
+
+@keyframes notifPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 6px 14px rgba(134, 134, 172, 0.16);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 12px 28px rgba(134, 134, 172, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 6px 14px rgba(134, 134, 172, 0.16);
+  }
+}

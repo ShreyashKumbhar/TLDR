@@ -1,41 +1,78 @@
+// src/components/Header.js
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import './Header.css';
+import StarsBackground from './StarsBackground';
 
-function Header() {
-  const { user, logout } = useAuth();
+export default function Header() {
+  const loc = useLocation();
 
   return (
-    <header className="header">
-      <div className="header-content">
-        <Link to="/" className="logo-link">
-          <h1>TLDR</h1>
-        </Link>
-        <nav className="nav">
-          <Link to="/">Home</Link>
-          <Link to="/trending">Trending</Link>
-          <Link to="/submit">Submit</Link>
-        </nav>
-        <div className="header-actions">
-          {user ? (
-            <>
-              <Link to="/profile" className="button button-secondary">
-                {user.username}
-              </Link>
-              <button className="button button-secondary logout-button" onClick={logout}>
-                Log Out
+    <>
+      <div className="header">
+        <div className="flex items-center justify-between">
+
+          {/* ------- LEFT: LOGO + NAV ------- */}
+          <div className="flex items-center gap-10">
+
+            {/* LOGO */}
+            <Link to="/" className="logo" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 10,
+                    background: 'linear-gradient(135deg,var(--muted), var(--indigo))',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 800,
+                    color: 'var(--text)',
+                    fontSize: 18,
+                    boxShadow: '0 6px 12px rgba(80,80,129,0.3)'
+                  }}
+                >
+                  TL
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 17 }}>TLDR</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted-text)' }}>Bite-sized News</div>
+                </div>
+              </div>
+            </Link>
+
+            {/* NAV LINKS */}
+            <nav className="flex items-center gap-8 text-muted">
+              <Link to="/" className={loc.pathname === '/' ? 'active-nav' : ''}>Home</Link>
+              <Link to="/trending" className={loc.pathname === '/trending' ? 'active-nav' : ''}>Trending</Link>
+              <Link to="/submit" className={loc.pathname === '/submit' ? 'active-nav' : ''}>Submit</Link>
+            </nav>
+          </div>
+
+          {/* ------- RIGHT SIDE: NOTIFS + BUTTONS ------- */}
+          <div className="flex items-center gap-8">
+
+            {/* Notifications */}
+            <div className="notif-wrap">
+              <button className="btn btn-ghost" title="Notifications" style={{ position: 'relative' }}>
+                🔔
+                <span className="notif-badge">3</span>
               </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="button button-secondary">Log In</Link>
-              <Link to="/signup" className="button">Sign Up</Link>
-            </>
-          )}
+            </div>
+
+            <Link to="/profile" className="btn">Profile</Link>
+            <Link to="/login" className="btn btn-ghost">Login</Link>
+          </div>
+
         </div>
       </div>
-    </header>
+
+      {/* SUBTLE STAR BACKGROUND */}
+      <StarsBackground intensity={30} />
+
+      <div className="header-spacer" />
+    </>
   );
 }
-
-export default Header;

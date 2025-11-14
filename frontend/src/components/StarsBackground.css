@@ -1,0 +1,16 @@
+/* src/components/StarsBackground.css */
+.stars-wrap{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+.stars-wrap .star{
+  position:absolute;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(130,130,180,0.6));
+  border-radius:50%;
+  transform: translateZ(0);
+  filter: blur(.6px);
+  animation: floatY 26s linear infinite;
+  box-shadow: 0 0 6px rgba(134,134,172,0.08), 0 0 10px rgba(80,80,129,0.03);
+}
+@keyframes floatY {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-18px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}

@@ -1,0 +1,8 @@
+/* src/components/KarmaBadge.css */
+.karma-card{ padding:12px; border-radius:12px; display:inline-block }
+.karma-ring{
+  width:64px; height:64px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+  background: conic-gradient(from 140deg, rgba(134,134,172,0.16), rgba(80,80,129,0.08));
+  box-shadow: 0 8px 18px rgba(5,4,20,0.5);
+}
+.karma-num{ font-weight:900; font-size:18px; color:var(--text) }
