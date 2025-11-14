@@ -92,6 +92,7 @@ npm start
    - Explore the featured summaries already on the home page
    - Request a password reset to see the recovery flow (token appears in user-service logs)
    - Click "Submit" to create a new summary (requires login)
+   - Visit `/profile` to view your karma and manage/delete your submissions
    - Vote on summaries
    - View trending summaries
    - Filter by tags

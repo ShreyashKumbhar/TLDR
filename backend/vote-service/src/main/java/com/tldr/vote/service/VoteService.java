@@ -3,16 +3,24 @@ package com.tldr.vote.service;
 import com.tldr.vote.dto.VoteDTO;
 import com.tldr.vote.model.Vote;
 import com.tldr.vote.repository.VoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class VoteService {
-    
-    @Autowired
-    private VoteRepository voteRepository;
-    
+
+    private final VoteRepository voteRepository;
+    private final RestTemplate restTemplate;
+
+    @Value("${services.summary.base-url:http://summary-service:8082}")
+    private String summaryServiceBaseUrl;
+
     @Transactional
     public VoteDTO castVote(Vote vote) {
         // Check if user already voted
@@ -21,11 +29,19 @@ public class VoteService {
         if (existingVote.isPresent()) {
             // Update existing vote
             Vote existing = existingVote.get();
+            int previousValue = existing.getValue();
             existing.setValue(vote.getValue());
-            return convertToDTO(voteRepository.save(existing));
+            VoteDTO dto = convertToDTO(voteRepository.save(existing));
+            int change = vote.getValue() - previousValue;
+            if (change != 0) {
+                updateSummaryVoteCount(vote.getSummaryId(), change);
+            }
+            return dto;
         } else {
             // Create new vote
-            return convertToDTO(voteRepository.save(vote));
+            VoteDTO dto = convertToDTO(voteRepository.save(vote));
+            updateSummaryVoteCount(vote.getSummaryId(), vote.getValue());
+            return dto;
         }
     }
     
@@ -42,7 +58,10 @@ public class VoteService {
     
     @Transactional
     public void removeVote(Long userId, Long summaryId) {
-        voteRepository.deleteByUserIdAndSummaryId(userId, summaryId);
+        voteRepository.findByUserIdAndSummaryId(userId, summaryId).ifPresent(existing -> {
+            voteRepository.delete(existing);
+            updateSummaryVoteCount(summaryId, -existing.getValue());
+        });
     }
     
     private VoteDTO convertToDTO(Vote vote) {
@@ -52,5 +71,17 @@ public class VoteService {
             vote.getSummaryId(),
             vote.getValue()
         );
+    }
+
+    private void updateSummaryVoteCount(Long summaryId, int change) {
+        String url = String.format("%s/api/summaries/%d/votes?change=%d", summaryServiceBaseUrl, summaryId, change);
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.PUT, null, Void.class);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new IllegalStateException("Failed to update summary vote count");
+            }
+        } catch (Exception ex) {
+            throw new IllegalStateException("Failed to update summary vote count", ex);
+        }
     }
 }

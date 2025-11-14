@@ -77,4 +77,10 @@ public class SummaryController {
         SummaryDTO summary = summaryService.updateCommentCount(id, change);
         return summary != null ? ResponseEntity.ok(summary) : ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSummary(@PathVariable Long id, @RequestParam Long userId) {
+        boolean deleted = summaryService.deleteSummary(id, userId);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 }

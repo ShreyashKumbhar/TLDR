@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,6 +79,17 @@ public class SummaryService {
                     return convertToDTO(summaryRepository.save(summary));
                 })
                 .orElse(null);
+    }
+
+    @Transactional
+    public boolean deleteSummary(Long id, Long userId) {
+        return summaryRepository.findById(id)
+                .filter(summary -> summary.getUserId().equals(userId))
+                .map(summary -> {
+                    summaryRepository.delete(summary);
+                    return true;
+                })
+                .orElse(false);
     }
     
     private SummaryDTO convertToDTO(Summary summary) {

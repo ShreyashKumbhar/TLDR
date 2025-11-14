@@ -39,7 +39,13 @@ export const summaryService = {
     summaryServiceClient.get(`/summaries/tags?tags=${tags.join(',')}&page=${page}&size=${size}`),
   
   getTrendingDigest: () => 
-    summaryServiceClient.get('/summaries/trending')
+    summaryServiceClient.get('/summaries/trending'),
+
+  getSummariesByUserId: (userId, page = 0, size = 20) =>
+    summaryServiceClient.get(`/summaries/user/${userId}?page=${page}&size=${size}`),
+
+  deleteSummary: (id, userId) =>
+    summaryServiceClient.delete(`/summaries/${id}?userId=${userId}`)
 };
 
 export const voteService = {

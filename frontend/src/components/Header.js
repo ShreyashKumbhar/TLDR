@@ -19,7 +19,9 @@ function Header() {
         <div className="header-actions">
           {user ? (
             <>
-              <span className="welcome-text">Hi, {user.username}</span>
+              <Link to="/profile" className="button button-secondary">
+                {user.username}
+              </Link>
               <button className="button button-secondary logout-button" onClick={logout}>
                 Log Out
               </button>

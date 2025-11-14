@@ -3,22 +3,50 @@ import { summaryService } from '../services/api';
 import SummaryCard from '../components/SummaryCard';
 
 function HomePage() {
+  const PAGE_SIZE = 5;
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState('recent');
+  const [pageMeta, setPageMeta] = useState({
+    first: true,
+    last: false,
+    totalPages: 1,
+    totalElements: 0
+  });
 
   useEffect(() => {
     loadSummaries();
   }, [sortBy, page]);
 
+  const handleSortChange = (value) => {
+    if (sortBy === value) return;
+    setSortBy(value);
+    setPage(0);
+  };
+
   const loadSummaries = async () => {
     try {
       setLoading(true);
       const response = sortBy === 'top' 
-        ? await summaryService.getTopSummaries(page)
-        : await summaryService.getAllSummaries(page);
-      setSummaries(response.data.content);
+        ? await summaryService.getTopSummaries(page, PAGE_SIZE)
+        : await summaryService.getAllSummaries(page, PAGE_SIZE);
+
+      const { content = [], first, last, totalPages, totalElements } = response.data;
+
+      // If we navigated past the last page (e.g., after deleting a summary), move back.
+      if (content.length === 0 && totalElements > 0 && page > 0 && last) {
+        setPage((prev) => Math.max(prev - 1, 0));
+        return;
+      }
+
+      setSummaries(content);
+      setPageMeta({
+        first: Boolean(first),
+        last: Boolean(last),
+        totalPages: totalPages || 1,
+        totalElements: totalElements || 0
+      });
     } catch (error) {
       console.error('Error loading summaries:', error);
     } finally {
@@ -31,13 +59,13 @@ function HomePage() {
       <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
         <button 
           className={`button ${sortBy === 'recent' ? '' : 'button-secondary'}`}
-          onClick={() => setSortBy('recent')}
+          onClick={() => handleSortChange('recent')}
         >
           Recent
         </button>
         <button 
           className={`button ${sortBy === 'top' ? '' : 'button-secondary'}`}
-          onClick={() => setSortBy('top')}
+          onClick={() => handleSortChange('top')}
         >
           Top
         </button>
@@ -47,19 +75,34 @@ function HomePage() {
         <div className="loading">Loading summaries...</div>
       ) : (
         <>
-          {summaries.map(summary => (
-            <SummaryCard key={summary.id} summary={summary} />
-          ))}
+          {summaries.length === 0 ? (
+            <div className="summary-card">
+              <p>No summaries found on this page{page > 0 ? '. Try going back a page.' : ' yet.'}</p>
+            </div>
+          ) : (
+            summaries.map(summary => (
+              <SummaryCard key={summary.id} summary={summary} />
+            ))
+          )}
           
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            {page > 0 && (
-              <button className="button" onClick={() => setPage(page - 1)}>
-                Previous
-              </button>
-            )}
-            <button className="button" onClick={() => setPage(page + 1)}>
+            <button 
+              className="button" 
+              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+              disabled={page === 0}
+            >
+              Previous
+            </button>
+            <button 
+              className="button" 
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={pageMeta.last || summaries.length === 0}
+            >
               Next
             </button>
+          </div>
+          <div style={{ marginTop: '10px', color: '#586069' }}>
+            Page {page + 1} of {Math.max(pageMeta.totalPages, 1)}
           </div>
         </>
       )}

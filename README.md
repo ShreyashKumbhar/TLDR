@@ -11,6 +11,7 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - 🏷️ **Tag by Topic** - Organize summaries by topics (technology, politics, science, etc.)
 - 💾 **Save for Later** - Bookmark summaries to read later
 - 🔥 **Daily Trending Digest** - View the top summaries from the last 24 hours
+- 👤 **Profile Dashboard** - Review your karma and manage/delete your submissions
 - 🔐 **User Accounts** - Secure signup, login, and password recovery workflows
 
 ### Technical Features
@@ -172,6 +173,8 @@ This will start all services and the frontend. Access the application at http://
 - `GET /api/summaries/{id}` - Get summary by ID
 - `POST /api/summaries` - Create new summary
 - `GET /api/summaries/tags?tags=tech,science` - Filter by tags
+- `GET /api/summaries/user/{userId}` - Fetch summaries for a specific user
+- `DELETE /api/summaries/{id}?userId={userId}` - Delete a user's own summary
 
 > **Startup seed data:** Five featured summaries (AI, climate, space, health, clean tech) are inserted automatically when no content exists to ensure the home feed showcases recent stories immediately after deployment.
 
