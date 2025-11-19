@@ -32,6 +32,11 @@ public class User {
     
     private Integer karma = 0;
 
+    @Column(name = "total_upvotes")
+    private Integer totalUpvotes = 0;
+
+    private String badge = "NEWBIE";
+
     @Column(nullable = false)
     private String role = "USER";
     

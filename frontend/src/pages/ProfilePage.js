@@ -11,6 +11,17 @@ function ProfilePage() {
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(null);
 
+  const getBadgeStyle = (badge) => {
+    const styles = {
+      PLATINUM: { backgroundColor: '#e8f5e9', color: '#2e7d32', borderColor: '#4caf50' },
+      GOLD: { backgroundColor: '#fff9c4', color: '#f57f17', borderColor: '#fdd835' },
+      SILVER: { backgroundColor: '#f5f5f5', color: '#616161', borderColor: '#9e9e9e' },
+      BRONZE: { backgroundColor: '#ffe0b2', color: '#e65100', borderColor: '#ff9800' },
+      NEWBIE: { backgroundColor: '#e3f2fd', color: '#1565c0', borderColor: '#42a5f5' }
+    };
+    return styles[badge] || styles.NEWBIE;
+  };
+
   useEffect(() => {
     if (!user) {
       navigate('/login', { replace: true, state: { from: '/profile' } });
@@ -62,6 +73,22 @@ function ProfilePage() {
           <div>
             <span className="profile-stat-label">Karma</span>
             <span className="profile-stat-value">{user.karma ?? 0}</span>
+          </div>
+          <div>
+            <span className="profile-stat-label">Total Upvotes</span>
+            <span className="profile-stat-value">{user.totalUpvotes ?? 0}</span>
+          </div>
+          <div>
+            <span className="profile-stat-label">Badge</span>
+            <span 
+              className="profile-stat-value badge-value" 
+              style={{
+                ...getBadgeStyle(user.badge),
+                border: `2px solid ${getBadgeStyle(user.badge).borderColor}`
+              }}
+            >
+              {user.badge ?? 'NEWBIE'}
+            </span>
           </div>
           <div>
             <span className="profile-stat-label">Submissions</span>

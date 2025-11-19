@@ -251,6 +251,29 @@ code {
   color: #24292e;
 }
 
+.badge-value {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.badge-value {
+  background-color: #e0e0e0;
+  color: #424242;
+}
+
+/* Badge tier colors */
+.profile-stat-value.badge-value {
+  display: inline-block;
+}
+
+.profile-stats div:has(.badge-value) .profile-stat-value {
+  margin-top: 4px;
+}
+
 .profile-submissions-header {
   display: flex;
   justify-content: space-between;

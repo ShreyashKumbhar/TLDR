@@ -132,11 +132,13 @@ public class AuthService {
 
     private UserDTO convertToDto(User user) {
         return new UserDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getKarma(),
-                user.getRole()
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getTotalUpvotes(),
+            user.getKarma(),
+            user.getRole(),
+            user.getBadge()
         );
     }
 }

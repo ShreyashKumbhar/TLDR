@@ -74,14 +74,36 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    public UserDTO updateTotalUpvotes(Long userId, Integer change) {
+        return userRepository.findById(userId)
+                .map(user -> {
+                    int newTotal = (user.getTotalUpvotes() == null ? 0 : user.getTotalUpvotes()) + (change == null ? 0 : change);
+                    if (newTotal < 0) newTotal = 0;
+                    user.setTotalUpvotes(newTotal);
+                    user.setBadge(determineBadge(newTotal));
+                    return convertToDTO(userRepository.save(user));
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
     private UserDTO convertToDTO(User user) {
         return new UserDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getKarma(),
-                user.getRole()
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getTotalUpvotes(),
+            user.getKarma(),
+            user.getRole(),
+            user.getBadge()
         );
+    }
+
+    private String determineBadge(int totalUpvotes) {
+        if (totalUpvotes >= 1000) return "PLATINUM";
+        if (totalUpvotes >= 200) return "GOLD";
+        if (totalUpvotes >= 50) return "SILVER";
+        if (totalUpvotes >= 10) return "BRONZE";
+        return "NEWBIE";
     }
 
     private String normalizeEmail(String email) {

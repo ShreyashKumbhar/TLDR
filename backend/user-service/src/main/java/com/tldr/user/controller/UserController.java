@@ -43,4 +43,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateKarma(@PathVariable Long id, @RequestParam Integer change) {
         return ResponseEntity.ok(userService.updateKarma(id, change));
     }
+
+    @PutMapping("/{id}/upvotes")
+    public ResponseEntity<UserDTO> updateTotalUpvotes(@PathVariable Long id, @RequestParam Integer change) {
+        return ResponseEntity.ok(userService.updateTotalUpvotes(id, change));
+    }
 }
