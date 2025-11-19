@@ -135,7 +135,8 @@ public class AuthService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getKarma()
+                user.getKarma(),
+                user.getRole()
         );
     }
 }

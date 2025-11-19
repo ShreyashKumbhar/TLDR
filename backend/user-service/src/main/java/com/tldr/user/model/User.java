@@ -31,6 +31,9 @@ public class User {
     private LocalDateTime createdAt;
     
     private Integer karma = 0;
+
+    @Column(nullable = false)
+    private String role = "USER";
     
     @PrePersist
     protected void onCreate() {

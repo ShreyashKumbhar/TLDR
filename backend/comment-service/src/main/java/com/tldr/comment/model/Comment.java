@@ -29,12 +29,33 @@ public class Comment {
     
     @Column(name = "parent_id")
     private Long parentId; // For nested comments
+
+    @Column(name = "likes_count")
+    private Integer likesCount = 0;
+
+    @Column(name = "reported")
+    private boolean reported = false;
+
+    @Column(name = "hidden")
+    private boolean hidden = false;
+
+    @Column(name = "moderated_by")
+    private Long moderatedBy;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
     @PrePersist
     protected void onCreate() {
+        if (likesCount == null) {
+            likesCount = 0;
+        }
+        if (reported == false) {
+            reported = false;
+        }
+        if (hidden == false) {
+            hidden = false;
+        }
         createdAt = LocalDateTime.now();
     }
 }

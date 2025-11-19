@@ -79,7 +79,8 @@ public class UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getKarma()
+                user.getKarma(),
+                user.getRole()
         );
     }
 

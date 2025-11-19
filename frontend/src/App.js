@@ -9,6 +9,7 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProfilePage from './pages/ProfilePage';
+import NotificationsPage from './pages/NotificationsPage';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Routes>
         </div>
       </AuthProvider>

@@ -8,6 +8,7 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - 📝 **Submit News Summaries** - Share concise summaries of news articles
 - ⬆️ **Upvote/Downvote** - Vote on summaries to promote quality content
 - 💬 **Commenting System** - Discuss summaries with nested comments
+- ❤️ **Comment Likes & Moderation** - Reply chains with likes, reporting, and moderator controls keep discussions positive
 - 🏷️ **Tag by Topic** - Organize summaries by topics (technology, politics, science, etc.)
 - 💾 **Save for Later** - Bookmark summaries to read later
 - 🔥 **Daily Trending Digest** - View the top summaries from the last 24 hours
@@ -139,6 +140,7 @@ The frontend will be available at http://localhost:3000
   - `sciencegeek@example.com`
   - `healthhero@example.com`
   - `marketwatcher@example.com`
+- `techfan@example.com` has the `MODERATOR` role for testing comment moderation tools
 - **Curated summaries** covering AI breakthroughs, climate policy, space exploration, biotech, and clean tech funding are inserted during service startup so the home page and trending view are never empty.
 - Vote and comment counters are pre-populated to showcase engagement out of the box.
 
@@ -187,10 +189,15 @@ This will start all services and the frontend. Access the application at http://
 
 ### Comment Service (Port 8084)
 
-- `POST /api/comments` - Create comment
-- `GET /api/comments/summary/{summaryId}` - Get comments for summary
+- `POST /api/comments` - Create comment or reply
+- `GET /api/comments/summary/{summaryId}` - Get threaded comments (supports optional `viewerId` for like state)
 - `GET /api/comments/count/{summaryId}` - Get comment count
-- `DELETE /api/comments/{id}` - Delete comment
+- `DELETE /api/comments/{id}?userId={userId}` - Delete comment (owner or moderator)
+- `POST /api/comments/{id}/likes?userId={userId}` - Like a comment
+- `DELETE /api/comments/{id}/likes?userId={userId}` - Remove like
+- `POST /api/comments/{id}/report?userId={userId}&reason=...` - Report a comment
+- `POST /api/comments/{id}/moderate/hide?userId={moderatorId}` - Hide a comment (moderators)
+- `POST /api/comments/{id}/moderate/restore?userId={moderatorId}` - Restore a hidden comment
 
 ### Saved Service (Port 8085)
 

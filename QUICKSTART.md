@@ -93,6 +93,7 @@ npm start
    - Request a password reset to see the recovery flow (token appears in user-service logs)
    - Click "Submit" to create a new summary (requires login)
    - Visit `/profile` to view your karma and manage/delete your submissions
+   - Expand the comments on any summary to reply, like, report, and (as `techfan`) hide/restore comments
    - Vote on summaries
    - View trending summaries
    - Filter by tags

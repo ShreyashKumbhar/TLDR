@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { voteService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import CommentSection from './CommentSection';
 
 function SummaryCard({ summary }) {
   const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
   const [userVote, setUserVote] = useState(0);
+  const [commentCount, setCommentCount] = useState(summary.commentCount || 0);
+  const [showComments, setShowComments] = useState(false);
   const { user } = useAuth();
   const currentUserId = user?.id;
 
@@ -76,7 +79,7 @@ function SummaryCard({ summary }) {
           <div className="summary-meta">
             <span>{formatDate(summary.createdAt)}</span>
             <span>•</span>
-            <span>{summary.commentCount || 0} comments</span>
+            <span>{commentCount} comments</span>
             <span>•</span>
             <a 
               href={summary.originalUrl} 
@@ -87,8 +90,22 @@ function SummaryCard({ summary }) {
               Read Full Article →
             </a>
           </div>
+          <div className="summary-actions">
+            <button
+              className="button button-secondary"
+              onClick={() => setShowComments((prev) => !prev)}
+            >
+              {showComments ? 'Hide Comments' : 'View Comments'}
+            </button>
+          </div>
         </div>
       </div>
+      {showComments && (
+        <CommentSection
+          summaryId={summary.id}
+          onCommentCountChange={setCommentCount}
+        />
+      )}
     </div>
   );
 }

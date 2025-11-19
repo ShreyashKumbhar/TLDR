@@ -66,14 +66,31 @@ export const commentService = {
   createComment: (comment) => 
     commentServiceClient.post('/comments', comment),
   
-  getCommentsBySummary: (summaryId, page = 0, size = 20) => 
-    commentServiceClient.get(`/comments/summary/${summaryId}?page=${page}&size=${size}`),
+  getCommentsBySummary: (summaryId, viewerId, page = 0, size = 20) => {
+    const viewerParam = viewerId ? `&viewerId=${viewerId}` : '';
+    return commentServiceClient.get(`/comments/summary/${summaryId}?page=${page}&size=${size}${viewerParam}`);
+  },
   
   getCommentCount: (summaryId) => 
     commentServiceClient.get(`/comments/count/${summaryId}`),
   
-  deleteComment: (id) => 
-    commentServiceClient.delete(`/comments/${id}`)
+  deleteComment: (id, userId) => 
+    commentServiceClient.delete(`/comments/${id}?userId=${userId}`),
+
+  likeComment: (id, userId) =>
+    commentServiceClient.post(`/comments/${id}/likes?userId=${userId}`),
+
+  unlikeComment: (id, userId) =>
+    commentServiceClient.delete(`/comments/${id}/likes?userId=${userId}`),
+
+  reportComment: (id, userId, reason) =>
+    commentServiceClient.post(`/comments/${id}/report`, null, { params: { userId, reason } }),
+
+  hideComment: (id, moderatorId) =>
+    commentServiceClient.post(`/comments/${id}/moderate/hide?userId=${moderatorId}`),
+
+  restoreComment: (id, moderatorId) =>
+    commentServiceClient.post(`/comments/${id}/moderate/restore?userId=${moderatorId}`)
 };
 
 export const savedService = {
@@ -88,6 +105,17 @@ export const savedService = {
   
   unsaveSummary: (userId, summaryId) => 
     savedServiceClient.delete(`/saved?userId=${userId}&summaryId=${summaryId}`)
+};
+
+export const notificationService = {
+  getNotifications: (userId, page = 0, size = 20) =>
+    commentServiceClient.get(`/notifications/user/${userId}?page=${page}&size=${size}`),
+
+  markRead: (notificationId, userId) =>
+    commentServiceClient.post(`/notifications/${notificationId}/read?userId=${userId}`),
+
+  markAllRead: (userId) =>
+    commentServiceClient.post(`/notifications/user/${userId}/read-all`)
 };
 
 export const userService = {
