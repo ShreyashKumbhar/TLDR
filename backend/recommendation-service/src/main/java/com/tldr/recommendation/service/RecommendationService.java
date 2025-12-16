@@ -493,18 +493,37 @@ public class RecommendationService {
         
         double impact = feedbackType.getImpact();
         
-        // Reduce tag preferences
-        @SuppressWarnings("unchecked")
-        Set<String> tags = (Set<String>) summary.get("tags");
-        if (tags != null) {
-            for (String tag : tags) {
-                preference.getTagPreferences().merge(tag, impact * 0.1, (old, delta) -> Math.max(0.0, old + delta));
+        // Reduce tag preferences - handle both List and Set safely
+        try {
+            Object tagsObj = summary.get("tags");
+            if (tagsObj != null) {
+                Set<String> tags = null;
+                if (tagsObj instanceof Set) {
+                    @SuppressWarnings("unchecked")
+                    Set<String> tagsSet = (Set<String>) tagsObj;
+                    tags = tagsSet;
+                } else if (tagsObj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<String> tagsList = (List<String>) tagsObj;
+                    tags = new HashSet<>(tagsList);
+                }
+                if (tags != null) {
+                    for (String tag : tags) {
+                        preference.getTagPreferences().merge(tag, impact * 0.1, (old, delta) -> Math.max(0.0, old + delta));
+                    }
+                }
             }
+        } catch (Exception e) {
+            log.warn("Error adjusting tag preferences for negative feedback on summary {}: {}", summaryId, e.getMessage());
         }
         
         // Reduce author preference
-        Long authorId = Long.valueOf(summary.get("userId").toString());
-        preference.getAuthorPreferences().merge(authorId, impact * 0.15, (old, delta) -> Math.max(0.0, old + delta));
+        try {
+            Long authorId = Long.valueOf(summary.get("userId").toString());
+            preference.getAuthorPreferences().merge(authorId, impact * 0.15, (old, delta) -> Math.max(0.0, old + delta));
+        } catch (Exception e) {
+            log.warn("Error adjusting author preference for negative feedback on summary {}: {}", summaryId, e.getMessage());
+        }
         
         preferenceRepository.save(preference);
     }

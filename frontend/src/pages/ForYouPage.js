@@ -142,22 +142,12 @@ function RecommendationCard({ recommendation, onFeedback, onSummaryUpdate }) {
             onFeedback(recommendation.summaryId, 'THUMBS_UP');
             setShowFeedback(false);
           }}
-          title="I like this recommendation"
+          title="I'm interested in this kind of content"
         >
-          👍 Helpful
+          👍 Interested
         </button>
         <button
           className="feedback-button feedback-negative"
-          onClick={() => {
-            onFeedback(recommendation.summaryId, 'THUMBS_DOWN');
-            setShowFeedback(false);
-          }}
-          title="Not helpful"
-        >
-          👎 Not helpful
-        </button>
-        <button
-          className="feedback-button feedback-hide"
           onClick={() => {
             onFeedback(recommendation.summaryId, 'NOT_INTERESTED');
             setShowFeedback(false);
