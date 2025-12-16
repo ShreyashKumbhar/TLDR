@@ -24,23 +24,27 @@ public class SampleUserDataLoader implements CommandLineRunner {
         }
 
         List<User> demoUsers = List.of(
-                createUser("techfan", "techfan@example.com", "password123!", 128, "MODERATOR"),
-                createUser("newsjunkie", "newsjunkie@example.com", "password123!", 92, "USER"),
-                createUser("sciencegeek", "sciencegeek@example.com", "password123!", 77, "USER"),
-                createUser("healthhero", "healthhero@example.com", "password123!", 64, "USER"),
-                createUser("marketwatcher", "marketwatcher@example.com", "password123!", 58, "USER")
+                createUser("techfan", "techfan@example.com", "password123!", 128, "MODERATOR", 0, "NEWBIE"),
+                createUser("newsjunkie", "newsjunkie@example.com", "password123!", 92, "USER", 0, "NEWBIE"),
+                createUser("sciencegeek", "sciencegeek@example.com", "password123!", 77, "USER", 0, "NEWBIE"),
+                createUser("healthhero", "healthhero@example.com", "password123!", 64, "USER", 0, "NEWBIE"),
+                createUser("marketwatcher", "marketwatcher@example.com", "password123!", 58, "USER", 0, "NEWBIE"),
+                // PLATINUM user with all badges - 1000+ upvotes
+                createUser("elitecontributor", "elitecontributor@example.com", "Password@123", 500, "USER", 1200, "PLATINUM")
         );
 
         userRepository.saveAll(demoUsers);
     }
 
-    private User createUser(String username, String email, String rawPassword, int karma, String role) {
+    private User createUser(String username, String email, String rawPassword, int karma, String role, int totalUpvotes, String badge) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email.toLowerCase());
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setKarma(karma);
         user.setRole(role);
+        user.setTotalUpvotes(totalUpvotes);
+        user.setBadge(badge);
         user.setCreatedAt(LocalDateTime.now().minusDays(7));
         return user;
     }

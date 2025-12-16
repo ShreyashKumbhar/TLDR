@@ -1,15 +1,39 @@
-import React, { useState } from 'react';
-import { voteService } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { voteService, recommendationService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
 
-function SummaryCard({ summary }) {
+function SummaryCard({ summary, onSummaryUpdate }) {
   const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
   const [userVote, setUserVote] = useState(0);
   const [commentCount, setCommentCount] = useState(summary.commentCount || 0);
   const [showComments, setShowComments] = useState(false);
+  const [loadingVote, setLoadingVote] = useState(false);
   const { user } = useAuth();
   const currentUserId = user?.id;
+
+  // Fetch user's existing vote when component mounts
+  useEffect(() => {
+    if (currentUserId && summary?.id) {
+      voteService.getVote(currentUserId, summary.id)
+        .then(response => {
+          if (response.data && response.data.value) {
+            setUserVote(response.data.value);
+          }
+        })
+        .catch(err => {
+          // No vote found is fine, just means user hasn't voted
+          if (err.response?.status !== 404) {
+            console.error('Error fetching vote:', err);
+          }
+        });
+      
+      // Track view behavior
+      recommendationService.trackBehavior(currentUserId, summary.id, 'VIEW')
+        .catch(err => console.error('Error tracking view:', err));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId, summary?.id]);
 
   const handleVote = async (value) => {
     if (!currentUserId) {
@@ -17,18 +41,54 @@ function SummaryCard({ summary }) {
       return;
     }
 
+    if (loadingVote) return; // Prevent double-clicks
+
     try {
+      setLoadingVote(true);
+      const previousVote = userVote;
+      let newVote = value;
+      let voteChange = value;
+
+      // If clicking the same button, remove the vote (Reddit-style)
       if (userVote === value) {
         await voteService.removeVote(currentUserId, summary.id);
-        setUserVote(0);
-        setVoteCount((prev) => prev - value);
+        // Remove vote behaviors from recommendation service
+        recommendationService.removeVoteBehaviors(currentUserId, summary.id)
+          .catch(err => console.error('Error removing vote behaviors:', err));
+        newVote = 0;
+        voteChange = -value; // Remove the vote
       } else {
+        // If switching from one vote to another, calculate the change
+        if (userVote !== 0) {
+          voteChange = value - userVote; // Change from previous vote
+          // Remove old vote behavior before tracking new one
+          recommendationService.removeVoteBehaviors(currentUserId, summary.id)
+            .catch(err => console.error('Error removing old vote behaviors:', err));
+        }
         await voteService.castVote(currentUserId, summary.id, value);
-        setVoteCount((prev) => prev - userVote + value);
-        setUserVote(value);
+        // Track vote behavior only for new votes or vote changes
+        if (previousVote === 0 || previousVote !== value) {
+          recommendationService.trackBehavior(
+            currentUserId, 
+            summary.id, 
+            value === 1 ? 'UPVOTE' : 'DOWNVOTE'
+          ).catch(err => console.error('Error tracking vote:', err));
+        }
+      }
+
+      // Update local state
+      setUserVote(newVote);
+      setVoteCount((prev) => prev + voteChange);
+
+      // Update parent if callback provided
+      if (onSummaryUpdate) {
+        onSummaryUpdate({ ...summary, voteCount: voteCount + voteChange });
       }
     } catch (error) {
       console.error('Error voting:', error);
+      alert('Failed to update vote. Please try again.');
+    } finally {
+      setLoadingVote(false);
     }
   };
 
@@ -48,19 +108,19 @@ function SummaryCard({ summary }) {
       <div className="summary-header">
         <div className="vote-section">
           <button
-            className={`vote-button ${userVote === 1 ? 'active' : ''}`}
+            className={`vote-button vote-up ${userVote === 1 ? 'active' : ''}`}
             onClick={() => handleVote(1)}
-            disabled={!currentUserId}
-            title={currentUserId ? 'Upvote' : 'Sign in to vote'}
+            disabled={!currentUserId || loadingVote}
+            title={currentUserId ? (userVote === 1 ? 'Remove upvote' : 'Upvote') : 'Sign in to vote'}
           >
             ▲
           </button>
           <span className="vote-count">{voteCount}</span>
           <button
-            className={`vote-button ${userVote === -1 ? 'active' : ''}`}
+            className={`vote-button vote-down ${userVote === -1 ? 'active' : ''}`}
             onClick={() => handleVote(-1)}
-            disabled={!currentUserId}
-            title={currentUserId ? 'Downvote' : 'Sign in to vote'}
+            disabled={!currentUserId || loadingVote}
+            title={currentUserId ? (userVote === -1 ? 'Remove downvote' : 'Downvote') : 'Sign in to vote'}
           >
             ▼
           </button>
@@ -77,6 +137,15 @@ function SummaryCard({ summary }) {
           </div>
 
           <div className="summary-meta">
+            <span className="summary-author">
+              {summary.username || `User ${summary.userId}`}
+              {summary.userBadge && (
+                <span className={`badge badge-${summary.userBadge.toLowerCase()}`}>
+                  {summary.userBadge}
+                </span>
+              )}
+            </span>
+            <span>•</span>
             <span>{formatDate(summary.createdAt)}</span>
             <span>•</span>
             <span>{commentCount} comments</span>
@@ -103,7 +172,18 @@ function SummaryCard({ summary }) {
       {showComments && (
         <CommentSection
           summaryId={summary.id}
-          onCommentCountChange={setCommentCount}
+          onCommentCountChange={(change) => {
+            setCommentCount((prev) => prev + change);
+            // Track comment behavior
+            if (currentUserId && change > 0) {
+              recommendationService.trackBehavior(currentUserId, summary.id, 'COMMENT')
+                .catch(err => console.error('Error tracking comment:', err));
+            }
+            // Update parent if callback provided
+            if (onSummaryUpdate) {
+              onSummaryUpdate({ ...summary, commentCount: commentCount + change });
+            }
+          }}
         />
       )}
     </div>

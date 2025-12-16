@@ -211,83 +211,86 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
   const formatDate = (ts) => new Date(ts).toLocaleString();
 
   return (
-    <div className="comment-item" style={{ marginLeft: depth * 20 }}>
-      <div className="comment-header">
-        <strong>{comment.username || 'User'}</strong>
-        <span className="comment-timestamp">{formatDate(comment.createdAt)}</span>
-      </div>
-      {comment.hidden ? (
-        <div className="comment-hidden">This comment has been hidden by a moderator.</div>
-      ) : (
-        <p className="comment-body">{comment.content}</p>
-      )}
-      <div className="comment-actions">
-        <button
-          className={`link-button ${comment.likedByViewer ? 'active' : ''}`}
-          onClick={() => onLike(comment)}
-          disabled={!user}
-        >
-          ❤️ {comment.likesCount || 0}
-        </button>
-        {canReply && (
-          <button className="link-button" onClick={() => setReplying((prev) => !prev)}>
-            {replying ? 'Cancel' : 'Reply'}
-          </button>
-        )}
-        {canReport && (
-          <button className="link-button" onClick={() => onReport(comment)}>
-            Report
-          </button>
-        )}
-        {canDelete && (
-          <button className="link-button" onClick={() => onDelete(comment)}>
-            Delete
-          </button>
-        )}
-        {isModerator && (
-          comment.hidden ? (
-            <button className="link-button" onClick={() => onModeration(comment, 'restore')}>
-              Restore
-            </button>
-          ) : (
-            <button className="link-button" onClick={() => onModeration(comment, 'hide')}>
-              Hide
-            </button>
-          )
-        )}
-      </div>
-
-      {replying && (
-        <div className="comment-reply-form">
-          <textarea
-            placeholder="Write a reply..."
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-          />
-          <button className="button" onClick={handleReplySubmit} disabled={!replyText.trim()}>
-            Reply
-          </button>
+    <div className={`comment-item comment-depth-${depth}`}>
+      {depth > 0 && <div className="comment-connector"></div>}
+      <div className="comment-content">
+        <div className="comment-header">
+          <strong className="comment-author">{comment.username || 'User'}</strong>
+          <span className="comment-timestamp">{formatDate(comment.createdAt)}</span>
         </div>
-      )}
+        {comment.hidden ? (
+          <div className="comment-hidden">This comment has been hidden by a moderator.</div>
+        ) : (
+          <p className="comment-body">{comment.content}</p>
+        )}
+        <div className="comment-actions">
+          <button
+            className={`link-button ${comment.likedByViewer ? 'active' : ''}`}
+            onClick={() => onLike(comment)}
+            disabled={!user}
+          >
+            ❤️ {comment.likesCount || 0}
+          </button>
+          {canReply && (
+            <button className="link-button" onClick={() => setReplying((prev) => !prev)}>
+              {replying ? 'Cancel' : 'Reply'}
+            </button>
+          )}
+          {canReport && (
+            <button className="link-button" onClick={() => onReport(comment)}>
+              Report
+            </button>
+          )}
+          {canDelete && (
+            <button className="link-button" onClick={() => onDelete(comment)}>
+              Delete
+            </button>
+          )}
+          {isModerator && (
+            comment.hidden ? (
+              <button className="link-button" onClick={() => onModeration(comment, 'restore')}>
+                Restore
+              </button>
+            ) : (
+              <button className="link-button" onClick={() => onModeration(comment, 'hide')}>
+                Hide
+              </button>
+            )
+          )}
+        </div>
 
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="comment-replies">
-          {comment.replies.map((reply) => (
-            <CommentItem
-              key={reply.id}
-              comment={reply}
-              depth={depth + 1}
-              user={user}
-              isModerator={isModerator}
-              onReply={onReply}
-              onLike={onLike}
-              onDelete={onDelete}
-              onReport={onReport}
-              onModeration={onModeration}
+        {replying && (
+          <div className="comment-reply-form">
+            <textarea
+              placeholder="Write a reply..."
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
             />
-          ))}
-        </div>
-      )}
+            <button className="button" onClick={handleReplySubmit} disabled={!replyText.trim()}>
+              Reply
+            </button>
+          </div>
+        )}
+
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="comment-replies">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                depth={depth + 1}
+                user={user}
+                isModerator={isModerator}
+                onReply={onReply}
+                onLike={onLike}
+                onDelete={onDelete}
+                onReport={onReport}
+                onModeration={onModeration}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

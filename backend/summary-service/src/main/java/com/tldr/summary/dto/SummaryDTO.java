@@ -16,6 +16,8 @@ public class SummaryDTO {
     private String content;
     private String originalUrl;
     private Long userId;
+    private String username;
+    private String userBadge;
     private Set<String> tags;
     private LocalDateTime createdAt;
     private Integer voteCount;

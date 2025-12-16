@@ -24,11 +24,11 @@ public class CommentNotification {
     @Column(name = "actor_user_id", nullable = false)
     private Long actorUserId;
 
-    @Column(name = "comment_id", nullable = false)
-    private Long commentId;
+    @Column(name = "comment_id")
+    private Long commentId; // Nullable for badge notifications
 
-    @Column(name = "summary_id", nullable = false)
-    private Long summaryId;
+    @Column(name = "summary_id")
+    private Long summaryId; // Nullable for badge notifications
 
     @Column(nullable = false)
     private String type;

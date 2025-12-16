@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/summaries")
@@ -20,9 +21,16 @@ public class SummaryController {
     private SummaryService summaryService;
     
     @PostMapping
-    public ResponseEntity<SummaryDTO> createSummary(@RequestBody Summary summary) {
-        SummaryDTO createdSummary = summaryService.createSummary(summary);
-        return new ResponseEntity<>(createdSummary, HttpStatus.CREATED);
+    public ResponseEntity<?> createSummary(@RequestBody Summary summary) {
+        try {
+            SummaryDTO createdSummary = summaryService.createSummary(summary);
+            return new ResponseEntity<>(createdSummary, HttpStatus.CREATED);
+        } catch (IllegalArgumentException ex) {
+            // User doesn't exist - return a clear error message
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", ex.getMessage(), 
+                                 "message", "Your user account may have been lost. Please log out and log in again."));
+        }
     }
     
     @GetMapping("/{id}")

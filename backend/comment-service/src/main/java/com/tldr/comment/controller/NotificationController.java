@@ -37,4 +37,17 @@ public class NotificationController {
         commentService.markAllNotificationsRead(userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{userId}/unread-count")
+    public ResponseEntity<Long> getUnreadCount(@PathVariable Long userId) {
+        return ResponseEntity.ok(commentService.getUnreadNotificationCount(userId));
+    }
+
+    @PostMapping("/badge")
+    public ResponseEntity<Void> createBadgeNotification(
+            @RequestParam Long userId,
+            @RequestParam String badge) {
+        commentService.createBadgeNotification(userId, badge);
+        return ResponseEntity.noContent().build();
+    }
 }

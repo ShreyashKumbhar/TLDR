@@ -49,6 +49,16 @@ services:
     networks:
       - tldr-network
 
+  recommendation-service:
+    build:
+      context: ./backend/recommendation-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
   frontend:
     build:
       context: ./frontend
@@ -60,6 +70,7 @@ services:
       - vote-service
       - comment-service
       - saved-service
+      - recommendation-service
     networks:
       - tldr-network
 

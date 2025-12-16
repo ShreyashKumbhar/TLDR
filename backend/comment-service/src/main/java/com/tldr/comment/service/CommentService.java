@@ -52,9 +52,15 @@ public class CommentService {
         comment.setHidden(false);
         Comment savedComment = commentRepository.save(comment);
         updateSummaryCommentCount(savedComment.getSummaryId(), 1);
-        if (savedComment.getParentId() != null) {
+        
+        // Notify post author if this is a top-level comment (not a reply)
+        if (savedComment.getParentId() == null) {
+            notifyPostComment(savedComment);
+        } else {
+            // Notify parent comment author if this is a reply
             notifyCommentReply(savedComment);
         }
+        
         return convertToDTO(savedComment, null);
     }
 
@@ -220,6 +226,10 @@ public class CommentService {
                 });
     }
 
+    public Long getUnreadNotificationCount(Long userId) {
+        return commentNotificationRepository.countByRecipientUserIdAndReadFalse(userId);
+    }
+
     public NotificationDTO mapNotificationToDto(CommentNotification notification) {
         UserProfile actor = resolveUserProfile(notification.getActorUserId());
         return new NotificationDTO(
@@ -234,6 +244,36 @@ public class CommentService {
                 notification.isRead(),
                 notification.getCreatedAt()
         );
+    }
+
+    private void notifyPostComment(Comment comment) {
+        // Fetch summary to get the post author
+        try {
+            String url = String.format("%s/api/summaries/%d", summaryServiceBaseUrl, comment.getSummaryId());
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Map<String, Object> summary = response.getBody();
+                Object userIdObj = summary.get("userId");
+                if (userIdObj != null) {
+                    Long postAuthorId = Long.valueOf(userIdObj.toString());
+                    // Don't notify if user is commenting on their own post
+                    if (!postAuthorId.equals(comment.getUserId())) {
+                        UserProfile actor = resolveUserProfile(comment.getUserId());
+                        String actorName = actor != null ? actor.getUsername() : "Someone";
+                        createNotification(
+                                postAuthorId,
+                                comment.getUserId(),
+                                comment.getId(),
+                                comment.getSummaryId(),
+                                "POST_COMMENT",
+                                String.format("%s commented on your post", actorName)
+                        );
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to fetch summary for comment notification: {}", ex.getMessage());
+        }
     }
 
     private void notifyCommentReply(Comment reply) {
@@ -285,6 +325,24 @@ public class CommentService {
             commentNotificationRepository.save(notification);
         } catch (Exception ex) {
             log.warn("Failed to create notification: {}", ex.getMessage());
+        }
+    }
+
+    // Public method for creating badge notifications (called from user-service)
+    public void createBadgeNotification(Long userId, String badge) {
+        try {
+            CommentNotification notification = new CommentNotification();
+            notification.setRecipientUserId(userId);
+            notification.setActorUserId(userId); // User is the actor for their own badge
+            notification.setCommentId(null); // No comment for badge notifications
+            notification.setSummaryId(null); // No summary for badge notifications
+            notification.setType("BADGE_UNLOCKED");
+            notification.setMessage(String.format("Congratulations! You've unlocked the %s badge!", badge));
+            notification.setRead(false);
+            commentNotificationRepository.save(notification);
+            log.info("Created badge notification for user {} with badge {}", userId, badge);
+        } catch (Exception ex) {
+            log.warn("Failed to create badge notification: {}", ex.getMessage());
         }
     }
 

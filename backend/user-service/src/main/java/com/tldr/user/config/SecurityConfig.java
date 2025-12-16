@@ -50,7 +50,8 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers(
                                 antMatcher("/actuator/**"),
-                                antMatcher("/api/auth/**")
+                                antMatcher("/api/auth/**"),
+                                antMatcher(HttpMethod.GET, "/api/users/**") // Allow public read access to user info
                         ).permitAll()
                         .requestMatchers(antMatcher(HttpMethod.OPTIONS, "/**")).permitAll()
                         .anyRequest().authenticated()
@@ -100,6 +101,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public org.springframework.web.client.RestTemplate restTemplate() {
+        return new org.springframework.web.client.RestTemplate();
     }
 }
 

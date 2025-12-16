@@ -22,6 +22,10 @@ const userServiceClient = axios.create({
   baseURL: `${API_BASE_URL}:8081/api`
 });
 
+const recommendationServiceClient = axios.create({
+  baseURL: `${API_BASE_URL}:8086/api`
+});
+
 export const summaryService = {
   getAllSummaries: (page = 0, size = 20) => 
     summaryServiceClient.get(`/summaries?page=${page}&size=${size}`),
@@ -84,7 +88,7 @@ export const commentService = {
     commentServiceClient.delete(`/comments/${id}/likes?userId=${userId}`),
 
   reportComment: (id, userId, reason) =>
-    commentServiceClient.post(`/comments/${id}/report`, null, { params: { userId, reason } }),
+    commentServiceClient.post(`/comments/${id}/report?userId=${userId}&reason=${encodeURIComponent(reason)}`),
 
   hideComment: (id, moderatorId) =>
     commentServiceClient.post(`/comments/${id}/moderate/hide?userId=${moderatorId}`),
@@ -110,6 +114,9 @@ export const savedService = {
 export const notificationService = {
   getNotifications: (userId, page = 0, size = 20) =>
     commentServiceClient.get(`/notifications/user/${userId}?page=${page}&size=${size}`),
+
+  getUnreadCount: (userId) =>
+    commentServiceClient.get(`/notifications/user/${userId}/unread-count`),
 
   markRead: (notificationId, userId) =>
     commentServiceClient.post(`/notifications/${notificationId}/read?userId=${userId}`),
@@ -148,4 +155,28 @@ export const authService = {
         Authorization: `Bearer ${token}`
       }
     })
+};
+
+export const recommendationService = {
+  getRecommendations: (userId, limit = 20) =>
+    recommendationServiceClient.get(`/recommendations/user/${userId}?limit=${limit}`),
+
+  trackBehavior: (userId, summaryId, behaviorType) =>
+    recommendationServiceClient.post(`/recommendations/track?userId=${userId}&summaryId=${summaryId}&behaviorType=${behaviorType}`),
+
+  removeVoteBehaviors: (userId, summaryId) =>
+    recommendationServiceClient.delete(`/recommendations/track?userId=${userId}&summaryId=${summaryId}`),
+
+  submitFeedback: (userId, summaryId, feedbackType) =>
+    recommendationServiceClient.post('/recommendations/feedback', {
+      userId,
+      summaryId,
+      feedbackType
+    }),
+
+  getUserPreferences: (userId) =>
+    recommendationServiceClient.get(`/recommendations/preferences/${userId}`),
+
+  updatePreferences: (userId) =>
+    recommendationServiceClient.post(`/recommendations/preferences/${userId}/update`)
 };
