@@ -3,7 +3,7 @@ import { voteService, recommendationService, savedService } from '../services/ap
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
 
-function SummaryCard({ summary, onSummaryUpdate }) {
+function SummaryCard({ summary, onSummaryUpdate, onSavedChange }) {
   const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
   const [userVote, setUserVote] = useState(0);
   const [commentCount, setCommentCount] = useState(summary.commentCount || 0);
@@ -133,9 +133,15 @@ function SummaryCard({ summary, onSummaryUpdate }) {
       if (isSaved) {
         await savedService.unsaveSummary(currentUserId, summary.id);
         setIsSaved(false);
+        if (onSavedChange) {
+          onSavedChange(false, summary.id);
+        }
       } else {
         await savedService.saveSummary(currentUserId, summary.id);
         setIsSaved(true);
+        if (onSavedChange) {
+          onSavedChange(true, summary.id);
+        }
       }
     } catch (error) {
       console.error('Error saving/unsaving summary:', error);

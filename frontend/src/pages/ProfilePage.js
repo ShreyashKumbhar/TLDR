@@ -51,7 +51,22 @@ function ProfilePage() {
     try {
       setLoadingSaved(true);
       const response = await savedService.getSavedSummaries(user.id);
-      setSavedSummaries(response.data.content || []);
+      const savedItems = response.data.content || [];
+
+      // Fetch full summary details for each saved item
+      const fullSummaries = await Promise.all(
+        savedItems.map(async (item) => {
+          try {
+            const summaryResponse = await summaryService.getSummaryById(item.summaryId);
+            return summaryResponse.data;
+          } catch (err) {
+            console.error('Error loading summary for saved item', item, err);
+            return null;
+          }
+        })
+      );
+
+      setSavedSummaries(fullSummaries.filter((s) => s !== null));
     } catch (err) {
       console.error('Error loading saved summaries', err);
     } finally {
@@ -164,7 +179,17 @@ function ProfilePage() {
 
             {!loadingSaved && savedSummaries.length > 0 && (
               savedSummaries.map((summary) => (
-                <SummaryCard key={summary.id} summary={summary} />
+                <SummaryCard
+                  key={summary.id}
+                  summary={summary}
+                  onSavedChange={(saved, summaryId) => {
+                    if (!saved) {
+                      setSavedSummaries((prev) =>
+                        prev.filter((s) => s.id !== summaryId)
+                      );
+                    }
+                  }}
+                />
               ))
             )}
           </>
