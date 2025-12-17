@@ -28,6 +28,7 @@ public class AuthService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     private static final long PASSWORD_RESET_TOKEN_MINUTES = 30;
 
@@ -62,21 +63,28 @@ public class AuthService {
     }
 
     public void requestPasswordReset(PasswordResetRequest request) {
-        userRepository.findByEmail(request.getEmail().trim().toLowerCase()).ifPresent(user -> {
-            passwordResetTokenRepository.deleteByUserId(user.getId());
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new IllegalArgumentException("No account found with that email address"));
 
-            String token = UUID.randomUUID().toString();
-            PasswordResetToken resetToken = PasswordResetToken.builder()
-                    .token(token)
-                    .user(user)
-                    .expiresAt(LocalDateTime.now().plusMinutes(PASSWORD_RESET_TOKEN_MINUTES))
-                    .used(false)
-                    .build();
+        // Delete any existing tokens for this user
+        passwordResetTokenRepository.deleteByUserId(user.getId());
 
-            passwordResetTokenRepository.save(resetToken);
+        // Create new token
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .token(token)
+                .user(user)
+                .expiresAt(LocalDateTime.now().plusMinutes(PASSWORD_RESET_TOKEN_MINUTES))
+                .used(false)
+                .build();
 
-            log.info("Password reset token generated for user {}. Token: {}", user.getEmail(), token);
-        });
+        passwordResetTokenRepository.save(resetToken);
+
+        // Send email with reset link
+        emailService.sendPasswordResetEmail(user, token);
+
+        log.info("Password reset token generated for user {}", user.getEmail());
     }
 
     @Transactional
