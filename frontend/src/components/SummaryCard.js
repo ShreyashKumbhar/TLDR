@@ -104,87 +104,74 @@ function SummaryCard({ summary, onSummaryUpdate }) {
   };
 
   return (
-    <div className="summary-card">
-      <div className="summary-header">
-        <div className="vote-section">
-          <button
-            className={`vote-button vote-up ${userVote === 1 ? 'active' : ''}`}
-            onClick={() => handleVote(1)}
-            disabled={!currentUserId || loadingVote}
-            title={currentUserId ? (userVote === 1 ? 'Remove upvote' : 'Upvote') : 'Sign in to vote'}
-          >
-            ▲
-          </button>
-          <span className="vote-count">{voteCount}</span>
-          <button
-            className={`vote-button vote-down ${userVote === -1 ? 'active' : ''}`}
-            onClick={() => handleVote(-1)}
-            disabled={!currentUserId || loadingVote}
-            title={currentUserId ? (userVote === -1 ? 'Remove downvote' : 'Downvote') : 'Sign in to vote'}
-          >
-            ▼
-          </button>
+    <div className="post-card">
+      <div className="post-header">
+        <div className="post-user">
+          <div className="user-avatar">
+            {(summary.username || `User ${summary.userId}`).charAt(0).toUpperCase()}
+          </div>
+          <div className="user-info">
+            <span className="username">{summary.username || `User ${summary.userId}`}</span>
+            {summary.userBadge && (
+              <span className={`badge badge-${summary.userBadge.toLowerCase()}`}>
+                {summary.userBadge}
+              </span>
+            )}
+            <span className="post-time">• {formatDate(summary.createdAt)}</span>
+          </div>
         </div>
+        <button className="post-menu">⋯</button>
+      </div>
 
-        <div className="summary-content">
-          <h3 className="summary-title">{summary.title}</h3>
-          <p className="summary-text">{summary.content}</p>
-          
-          <div style={{ marginBottom: '10px' }}>
-            {summary.tags && summary.tags.map(tag => (
-              <span key={tag} className="tag">{tag}</span>
-            ))}
-          </div>
-
-          <div className="summary-meta">
-            <span className="summary-author">
-              {summary.username || `User ${summary.userId}`}
-              {summary.userBadge && (
-                <span className={`badge badge-${summary.userBadge.toLowerCase()}`}>
-                  {summary.userBadge}
-                </span>
-              )}
-            </span>
-            <span>•</span>
-            <span>{formatDate(summary.createdAt)}</span>
-            <span>•</span>
-            <span>{commentCount} comments</span>
-            <span>•</span>
-            <a 
-              href={summary.originalUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="original-link"
-            >
-              Read Full Article →
-            </a>
-          </div>
-          <div className="summary-actions">
-            <button
-              className="button button-secondary"
-              onClick={() => setShowComments((prev) => !prev)}
-            >
-              {showComments ? 'Hide Comments' : 'View Comments'}
-            </button>
-          </div>
+      <div className="post-content">
+        <h3 className="post-title">{summary.title}</h3>
+        <p className="post-text">{summary.content}</p>
+        
+        <div className="post-tags">
+          {summary.tags && summary.tags.map(tag => (
+            <span key={tag} className="tag">{tag}</span>
+          ))}
         </div>
       </div>
+
+      <div className="post-actions">
+        <button
+          className={`action-button like-button ${userVote === 1 ? 'active' : ''}`}
+          onClick={() => handleVote(1)}
+          disabled={!currentUserId || loadingVote}
+        >
+          ❤️ {voteCount}
+        </button>
+        <button
+          className="action-button comment-button"
+          onClick={() => setShowComments((prev) => !prev)}
+        >
+          💬 {commentCount}
+        </button>
+        <button className="action-button share-button">
+          📤
+        </button>
+        <button className="action-button save-button">
+          🔖
+        </button>
+      </div>
+
       {showComments && (
-        <CommentSection
-          summaryId={summary.id}
-          onCommentCountChange={(change) => {
-            setCommentCount((prev) => prev + change);
-            // Track comment behavior
-            if (currentUserId && change > 0) {
-              recommendationService.trackBehavior(currentUserId, summary.id, 'COMMENT')
-                .catch(err => console.error('Error tracking comment:', err));
-            }
-            // Update parent if callback provided
-            if (onSummaryUpdate) {
-              onSummaryUpdate({ ...summary, commentCount: commentCount + change });
-            }
-          }}
-        />
+        <div className="post-comments">
+          <CommentSection
+            summaryId={summary.id}
+            onCommentCountChange={(change) => {
+              setCommentCount((prev) => prev + change);
+              if (currentUserId && change > 0) {
+                recommendationService.trackBehavior(currentUserId, summary.id, 'COMMENT')
+                  .catch(err => console.error('Error tracking comment:', err));
+              }
+              if (onSummaryUpdate) {
+                onSummaryUpdate({ ...summary, commentCount: commentCount + change });
+              }
+            }}
+          />
+        </div>
       )}
     </div>
   );

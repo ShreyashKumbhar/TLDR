@@ -55,20 +55,23 @@ function HomePage() {
   };
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-        <button 
-          className={`button ${sortBy === 'recent' ? '' : 'button-secondary'}`}
-          onClick={() => handleSortChange('recent')}
-        >
-          Recent
-        </button>
-        <button 
-          className={`button ${sortBy === 'top' ? '' : 'button-secondary'}`}
-          onClick={() => handleSortChange('top')}
-        >
-          Top
-        </button>
+    <div className="feed">
+      <div className="feed-header">
+        <h2>Home</h2>
+        <div className="sort-buttons">
+          <button 
+            className={`sort-button ${sortBy === 'recent' ? 'active' : ''}`}
+            onClick={() => handleSortChange('recent')}
+          >
+            Recent
+          </button>
+          <button 
+            className={`sort-button ${sortBy === 'top' ? 'active' : ''}`}
+            onClick={() => handleSortChange('top')}
+          >
+            Top
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -76,8 +79,8 @@ function HomePage() {
       ) : (
         <>
           {summaries.length === 0 ? (
-            <div className="summary-card">
-              <p>No summaries found on this page{page > 0 ? '. Try going back a page.' : ' yet.'}</p>
+            <div className="post-card">
+              <p>No summaries found.</p>
             </div>
           ) : (
             summaries.map(summary => (
@@ -85,7 +88,7 @@ function HomePage() {
             ))
           )}
           
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <div className="pagination">
             <button 
               className="button" 
               onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
@@ -100,9 +103,6 @@ function HomePage() {
             >
               Next
             </button>
-          </div>
-          <div style={{ marginTop: '10px', color: '#586069' }}>
-            Page {page + 1} of {Math.max(pageMeta.totalPages, 1)}
           </div>
         </>
       )}

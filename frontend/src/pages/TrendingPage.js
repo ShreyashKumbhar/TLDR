@@ -23,11 +23,11 @@ function TrendingPage() {
   };
 
   return (
-    <div className="container">
-      <h2 style={{ marginBottom: '20px', color: '#24292e' }}>
-        🔥 Trending Today
-      </h2>
-      <p style={{ marginBottom: '20px', color: '#586069' }}>
+    <div className="feed">
+      <div className="feed-header">
+        <h2>🔥 Trending</h2>
+      </div>
+      <p className="feed-description">
         Top summaries from the last 24 hours
       </p>
 
@@ -36,8 +36,8 @@ function TrendingPage() {
       ) : (
         <>
           {trending.length === 0 ? (
-            <div className="summary-card">
-              No trending summaries yet. Be the first to submit!
+            <div className="post-card">
+              <p>No trending summaries yet. Be the first to submit!</p>
             </div>
           ) : (
             trending.map(summary => (

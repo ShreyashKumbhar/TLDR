@@ -25,10 +25,19 @@ body {
   background-color: var(--ivory);
   color: var(--text-primary);
   line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
-code {
-  font-family: 'Fira Code', 'Courier New', monospace;
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-bottom: 80px; /* Space for bottom nav */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -37,149 +46,260 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
-.container {
-  max-width: 1400px;
+.feed {
+  max-width: 600px;
   margin: 0 auto;
-  padding: 40px 60px;
+  padding: 16px;
 }
 
-/* ═══════════════════════════════════════════════════════
-   HEADER - Editorial Masthead Style
-   ═══════════════════════════════════════════════════════ */
-.header {
-  background: linear-gradient(135deg, var(--deep-navy) 0%, #142840 100%);
-  color: white;
-  padding: 24px 0;
-  margin-bottom: 0;
-  box-shadow: var(--shadow-medium);
-  border-bottom: 3px solid var(--amber);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-}
-
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 60px;
+.feed-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  margin-bottom: 16px;
 }
 
-.header h1 {
-  font-size: 32px;
+.feed-header h2 {
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #ffffff 0%, var(--amber) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--deep-navy);
+  margin: 0;
 }
 
-.logo-link {
-  color: inherit;
-  text-decoration: none;
-  transition: transform 0.3s ease;
-  display: inline-block;
-}
-
-.logo-link:hover {
-  transform: translateY(-2px);
-}
-
-.nav {
+.sort-buttons {
   display: flex;
-  gap: 32px;
-  align-items: center;
+  gap: 8px;
 }
 
-.nav a {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  position: relative;
-  padding: 8px 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--amber);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav a:hover {
-  color: white;
-}
-
-.nav a:hover::after {
-  width: 100%;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.welcome-text {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 400;
+.sort-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
   font-size: 14px;
-  padding-right: 12px;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.logout-button {
-  min-width: 90px;
+.sort-button:hover {
+  background: var(--border-subtle);
+}
+
+.feed-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.search-container {
+  margin-bottom: 16px;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  font-size: 16px;
+  background: white;
+}
+
+.search-submit {
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 /* ═══════════════════════════════════════════════════════
-   RIBBON LAYOUT - No Cards, Timeline Style
+   TOP BAR - Instagram Style
    ═══════════════════════════════════════════════════════ */
-.summary-card {
+.top-bar {
   background: white;
-  border: none;
-  border-left: 4px solid transparent;
   border-bottom: 1px solid var(--border-subtle);
-  padding: 40px 0;
-  margin-bottom: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.top-bar-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-link h1 {
+  font-size: 24px;
+  margin: 0;
+  color: var(--deep-navy);
+}
+
+.search-link, .notification-link, .message-link {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 24px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--amber);
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 16px;
+  text-align: center;
+}
+
+.notification-link {
   position: relative;
+}
+
+.login-link {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════
+   POST CARD - Instagram Style
+   ═══════════════════════════════════════════════════════ */
+.post-card {
+  background: white;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  margin-bottom: 16px;
   overflow: hidden;
 }
 
-.summary-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4px;
-  height: 0;
-  background: linear-gradient(180deg, var(--teal), var(--amber));
-  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
 }
 
-.summary-card:hover {
-  background: rgba(245, 242, 235, 0.5);
-  border-left-color: var(--amber);
-  padding-left: 20px;
-  box-shadow: var(--shadow-soft);
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.summary-card:hover::before {
-  height: 100%;
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.username {
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+
+.post-time {
+  color: var(--text-secondary);
+}
+
+.post-menu {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.post-content {
+  padding: 0 16px 12px;
+}
+
+.post-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--deep-navy);
+  line-height: 1.4;
+}
+
+.post-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.post-tags {
+  margin-bottom: 12px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.action-button:hover {
+  color: var(--deep-navy);
+}
+
+.like-button.active {
+  color: red;
+}
+
+.comment-button:hover {
+  color: var(--teal);
+}
+
+.share-button:hover {
+  color: var(--amber);
+}
+
+.post-comments {
+  border-top: 1px solid var(--border-subtle);
+  padding: 12px 16px;
 }
 
 /* Margin-based voting interactions */
@@ -1331,4 +1451,122 @@ textarea.form-control {
 .feedback-hide:hover {
   background: rgba(74, 74, 74, 0.1);
   border-color: var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════ */
+.search-container {
+  margin-bottom: 16px;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  font-size: 16px;
+  background: white;
+}
+
+.search-submit {
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROFILE
+   ═══════════════════════════════════════════════════════ */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.profile-info h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  color: var(--deep-navy);
+}
+
+.profile-info p {
+  margin: 0 0 12px 0;
+  color: var(--text-secondary);
+}
+
+.profile-stats-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.profile-stats-row span {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.profile-badge {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.edit-profile-button {
+  margin-bottom: 16px;
+}
+
+.profile-posts {
+  /* No specific styles, just container */
+}
+
+.profile-post-wrapper {
+  position: relative;
+}
+
+.delete-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: red;
 }

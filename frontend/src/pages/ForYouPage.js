@@ -65,26 +65,25 @@ function ForYouPage() {
   }
 
   return (
-    <div className="container">
-      <div className="page-header">
+    <div className="feed">
+      <div className="feed-header">
         <h2>For You</h2>
-        <p className="page-subtitle">
-          Personalized recommendations based on your interests and activity
-        </p>
-        <button 
-          onClick={loadRecommendations} 
-          className="refresh-button"
-          style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer' }}
-        >
-          🔄 Refresh Recommendations
-        </button>
       </div>
+      <p className="feed-description">
+        Personalized recommendations based on your interests and activity
+      </p>
+      <button 
+        onClick={loadRecommendations} 
+        className="refresh-button"
+      >
+        🔄 Refresh
+      </button>
 
       {loading && <div className="loading">Loading personalized recommendations...</div>}
       {!loading && error && <div className="error">{error}</div>}
       
       {!loading && !error && recommendations.length === 0 && (
-        <div className="empty-state">
+        <div className="post-card">
           <p>We need more information about your preferences to provide recommendations.</p>
           <p>Start by exploring summaries, voting, and commenting!</p>
         </div>
@@ -95,16 +94,14 @@ function ForYouPage() {
           <div className="recommendations-info">
             <p>Found {recommendations.length} personalized recommendations for you</p>
           </div>
-          <div className="recommendations-list">
-            {recommendations.map((recommendation) => (
-              <RecommendationCard
-                key={recommendation.summaryId}
-                recommendation={recommendation}
-                onFeedback={handleFeedback}
-                onSummaryUpdate={handleSummaryUpdate}
-              />
-            ))}
-          </div>
+          {recommendations.map((recommendation) => (
+            <RecommendationCard
+              key={recommendation.summaryId}
+              recommendation={recommendation}
+              onFeedback={handleFeedback}
+              onSummaryUpdate={handleSummaryUpdate}
+            />
+          ))}
         </>
       )}
     </div>

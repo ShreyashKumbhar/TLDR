@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { summaryService } from '../services/api';
+import SummaryCard from '../components/SummaryCard';
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -63,82 +64,56 @@ function ProfilePage() {
   }
 
   return (
-    <div className="container">
-      <div className="profile-card">
-        <div>
+    <div className="feed">
+      <div className="profile-header">
+        <div className="profile-avatar">
+          {user.username.charAt(0).toUpperCase()}
+        </div>
+        <div className="profile-info">
           <h2>{user.username}</h2>
           <p>{user.email}</p>
-        </div>
-        <div className="profile-stats">
-          <div>
-            <span className="profile-stat-label">Karma</span>
-            <span className="profile-stat-value">{user.karma ?? 0}</span>
+          <div className="profile-stats-row">
+            <span><strong>{summaries.length}</strong> posts</span>
+            <span><strong>{user.karma ?? 0}</strong> karma</span>
+            <span><strong>{user.totalUpvotes ?? 0}</strong> upvotes</span>
           </div>
-          <div>
-            <span className="profile-stat-label">Total Upvotes</span>
-            <span className="profile-stat-value">{user.totalUpvotes ?? 0}</span>
-          </div>
-          <div>
-            <span className="profile-stat-label">Badge</span>
-            <span 
-              className="profile-stat-value badge-value" 
-              style={{
-                ...getBadgeStyle(user.badge),
-                border: `2px solid ${getBadgeStyle(user.badge).borderColor}`
-              }}
-            >
-              {user.badge ?? 'NEWBIE'}
-            </span>
-          </div>
-          <div>
-            <span className="profile-stat-label">Submissions</span>
-            <span className="profile-stat-value">{summaries.length}</span>
+          <div className="profile-badge">
+            Badge: <span className={`badge badge-${user.badge?.toLowerCase() || 'newbie'}`}>{user.badge ?? 'NEWBIE'}</span>
           </div>
         </div>
-        <Link to="/submit" className="button">Submit a Summary</Link>
+      </div>
+      <div className="profile-actions">
+        <Link to="/submit" className="button edit-profile-button">Submit a Summary</Link>
       </div>
 
-      <div className="summary-card">
-        <div className="profile-submissions-header">
-          <h3>Your submissions</h3>
-        </div>
-
+      <div className="profile-posts">
         {loading && <div className="loading">Loading your summaries...</div>}
         {!loading && error && <div className="error">{error}</div>}
         {!loading && !error && summaries.length === 0 && (
-          <div className="empty-state">
+          <div className="post-card">
             <p>You haven’t submitted anything yet.</p>
             <Link to="/submit" className="button">Share your first summary</Link>
           </div>
         )}
 
         {!loading && !error && summaries.length > 0 && (
-          <ul className="profile-submissions">
-            {summaries.map((summary) => (
-              <li key={summary.id} className="profile-submission">
-                <div>
-                  <h4>{summary.title}</h4>
-                  <p>{summary.content}</p>
-                  <div className="summary-meta">
-                    <span>{summary.voteCount || 0} votes</span>
-                    <span>•</span>
-                    <span>{summary.commentCount || 0} comments</span>
-                  </div>
-                </div>
-                <button
-                  className="button button-secondary"
-                  onClick={() => handleDelete(summary.id)}
-                  disabled={deleting === summary.id}
-                >
-                  {deleting === summary.id ? 'Deleting…' : 'Delete'}
-                </button>
-              </li>
-            ))}
-          </ul>
+          summaries.map((summary) => (
+            <div key={summary.id} className="profile-post-wrapper">
+              <SummaryCard summary={summary} />
+              <button
+                className="delete-button"
+                onClick={() => handleDelete(summary.id)}
+                disabled={deleting === summary.id}
+              >
+                {deleting === summary.id ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          ))
         )}
       </div>
     </div>
   );
+
 }
 
 export default ProfilePage;
