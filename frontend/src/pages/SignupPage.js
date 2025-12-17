@@ -75,8 +75,8 @@ function SignupPage() {
   };
 
   return (
-    <div className="container auth-container">
-      <div className="summary-card auth-card">
+    <div className="container auth-container" style={{ backgroundImage: 'url("frontend\public\bg.png")', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      <div className="summary-card auth-card" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
         <h2 style={{ marginBottom: '16px' }}>Create your TLDR account</h2>
         <p style={{ marginBottom: '24px', color: '#586069' }}>
           Sign up to share summaries, vote on stories, and join the conversation.

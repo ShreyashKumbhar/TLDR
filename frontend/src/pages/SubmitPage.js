@@ -79,8 +79,8 @@ function SubmitPage() {
   }
 
   return (
-    <div className="container">
-      <div className="summary-card">
+    <div className="submit-container">
+      <div className="summary-card submit-form">
         <h2 style={{ marginBottom: '20px' }}>Submit a New Summary</h2>
 
         {errorMessage && <div className="error">{errorMessage}</div>}

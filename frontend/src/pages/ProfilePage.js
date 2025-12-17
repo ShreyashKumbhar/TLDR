@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { summaryService } from '../services/api';
+import { summaryService, savedService } from '../services/api';
 import SummaryCard from '../components/SummaryCard';
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [summaries, setSummaries] = useState([]);
+  const [savedSummaries, setSavedSummaries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSaved, setLoadingSaved] = useState(false);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(null);
+  const [activeTab, setActiveTab] = useState('posts');
 
   const getBadgeStyle = (badge) => {
     const styles = {
@@ -28,7 +31,7 @@ function ProfilePage() {
       navigate('/login', { replace: true, state: { from: '/profile' } });
       return;
     }
-    const loadSummaries = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
         const response = await summaryService.getSummariesByUserId(user.id);
@@ -40,8 +43,27 @@ function ProfilePage() {
         setLoading(false);
       }
     };
-    loadSummaries();
+    loadData();
   }, [user, navigate]);
+
+  const loadSavedSummaries = async () => {
+    if (!user) return;
+    try {
+      setLoadingSaved(true);
+      const response = await savedService.getSavedSummaries(user.id);
+      setSavedSummaries(response.data.content || []);
+    } catch (err) {
+      console.error('Error loading saved summaries', err);
+    } finally {
+      setLoadingSaved(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'saved' && savedSummaries.length === 0) {
+      loadSavedSummaries();
+    }
+  }, [activeTab]);
 
   const handleDelete = async (summaryId) => {
     if (!user) return;
@@ -84,31 +106,68 @@ function ProfilePage() {
       </div>
       <div className="profile-actions">
         <Link to="/submit" className="button edit-profile-button">Submit a Summary</Link>
+        <button className="button logout-button" onClick={logout}>Logout</button>
+      </div>
+
+      <div className="profile-tabs">
+        <button 
+          className={`tab-button ${activeTab === 'posts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('posts')}
+        >
+          My Posts
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'saved' ? 'active' : ''}`}
+          onClick={() => setActiveTab('saved')}
+        >
+          Saved
+        </button>
       </div>
 
       <div className="profile-posts">
-        {loading && <div className="loading">Loading your summaries...</div>}
-        {!loading && error && <div className="error">{error}</div>}
-        {!loading && !error && summaries.length === 0 && (
-          <div className="post-card">
-            <p>You haven’t submitted anything yet.</p>
-            <Link to="/submit" className="button">Share your first summary</Link>
-          </div>
+        {activeTab === 'posts' && (
+          <>
+            {loading && <div className="loading">Loading your summaries...</div>}
+            {!loading && error && <div className="error">{error}</div>}
+            {!loading && !error && summaries.length === 0 && (
+              <div className="post-card">
+                <p>You haven't submitted anything yet.</p>
+                <Link to="/submit" className="button">Share your first summary</Link>
+              </div>
+            )}
+
+            {!loading && !error && summaries.length > 0 && (
+              summaries.map((summary) => (
+                <div key={summary.id} className="profile-post-wrapper">
+                  <SummaryCard summary={summary} />
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(summary.id)}
+                    disabled={deleting === summary.id}
+                  >
+                    {deleting === summary.id ? 'Deleting…' : 'Delete'}
+                  </button>
+                </div>
+              ))
+            )}
+          </>
         )}
 
-        {!loading && !error && summaries.length > 0 && (
-          summaries.map((summary) => (
-            <div key={summary.id} className="profile-post-wrapper">
-              <SummaryCard summary={summary} />
-              <button
-                className="delete-button"
-                onClick={() => handleDelete(summary.id)}
-                disabled={deleting === summary.id}
-              >
-                {deleting === summary.id ? 'Deleting…' : 'Delete'}
-              </button>
-            </div>
-          ))
+        {activeTab === 'saved' && (
+          <>
+            {loadingSaved && <div className="loading">Loading saved summaries...</div>}
+            {!loadingSaved && savedSummaries.length === 0 && (
+              <div className="post-card">
+                <p>You haven't saved any summaries yet.</p>
+              </div>
+            )}
+
+            {!loadingSaved && savedSummaries.length > 0 && (
+              savedSummaries.map((summary) => (
+                <SummaryCard key={summary.id} summary={summary} />
+              ))
+            )}
+          </>
         )}
       </div>
     </div>
