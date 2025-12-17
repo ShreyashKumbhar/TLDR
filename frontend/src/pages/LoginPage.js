@@ -52,8 +52,8 @@ function LoginPage() {
   };
 
   return (
-    <div className="container auth-container">
-      <div className="summary-card auth-card">
+    <div className="container auth-container" style={{ backgroundImage: 'url("frontend\public\bg.png")', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      <div className="summary-card auth-card" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
         <h2 style={{ marginBottom: '20px' }}>Welcome Back</h2>
         <p style={{ marginBottom: '20px', color: '#586069' }}>
           Sign in to vote, comment, and submit summaries.
