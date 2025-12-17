@@ -26,9 +26,12 @@
   color: var(--deep-navy);
 }
 
-.bottom-nav-icon {
-  font-size: 24px;
+.bottom-nav-item .nav-icon {
+  width: 24px;
+  height: 24px;
   margin-bottom: 4px;
+  stroke: currentColor;
+  transition: stroke 0.3s ease;
 }
 
 .bottom-nav-label {

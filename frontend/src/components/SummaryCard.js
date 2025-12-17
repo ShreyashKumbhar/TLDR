@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { voteService, recommendationService } from '../services/api';
+import { voteService, recommendationService, savedService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
 
@@ -9,10 +9,11 @@ function SummaryCard({ summary, onSummaryUpdate }) {
   const [commentCount, setCommentCount] = useState(summary.commentCount || 0);
   const [showComments, setShowComments] = useState(false);
   const [loadingVote, setLoadingVote] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const { user } = useAuth();
   const currentUserId = user?.id;
 
-  // Fetch user's existing vote when component mounts
+  // Fetch user's existing vote and saved status when component mounts
   useEffect(() => {
     if (currentUserId && summary?.id) {
       voteService.getVote(currentUserId, summary.id)
@@ -25,6 +26,18 @@ function SummaryCard({ summary, onSummaryUpdate }) {
           // No vote found is fine, just means user hasn't voted
           if (err.response?.status !== 404) {
             console.error('Error fetching vote:', err);
+          }
+        });
+      
+      // Check if summary is saved
+      savedService.isSaved(currentUserId, summary.id)
+        .then(response => {
+          setIsSaved(response.data);
+        })
+        .catch(err => {
+          // Not saved is fine
+          if (err.response?.status !== 404) {
+            console.error('Error checking saved status:', err);
           }
         });
       
@@ -68,10 +81,11 @@ function SummaryCard({ summary, onSummaryUpdate }) {
         await voteService.castVote(currentUserId, summary.id, value);
         // Track vote behavior only for new votes or vote changes
         if (previousVote === 0 || previousVote !== value) {
+          const behaviorType = value === 1 ? 'UPVOTE' : 'DOWNVOTE';
           recommendationService.trackBehavior(
             currentUserId, 
             summary.id, 
-            value === 1 ? 'UPVOTE' : 'DOWNVOTE'
+            behaviorType
           ).catch(err => console.error('Error tracking vote:', err));
         }
       }
@@ -89,6 +103,43 @@ function SummaryCard({ summary, onSummaryUpdate }) {
       alert('Failed to update vote. Please try again.');
     } finally {
       setLoadingVote(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/summary/${summary.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  const handleSave = async () => {
+    if (!currentUserId) {
+      alert('Please sign in to save summaries.');
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await savedService.unsaveSummary(currentUserId, summary.id);
+        setIsSaved(false);
+      } else {
+        await savedService.saveSummary(currentUserId, summary.id);
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error('Error saving/unsaving summary:', error);
+      alert('Failed to save summary. Please try again.');
     }
   };
 
@@ -135,24 +186,40 @@ function SummaryCard({ summary, onSummaryUpdate }) {
       </div>
 
       <div className="post-actions">
-        <button
-          className={`action-button like-button ${userVote === 1 ? 'active' : ''}`}
-          onClick={() => handleVote(1)}
-          disabled={!currentUserId || loadingVote}
-        >
-          ❤️ {voteCount}
-        </button>
+        <div className="vote-buttons">
+          <button
+            className={`vote-button upvote ${userVote === 1 ? 'active' : ''}`}
+            onClick={() => handleVote(1)}
+            disabled={!currentUserId || loadingVote}
+          >
+            ▲
+          </button>
+          <span className="vote-count">{voteCount}</span>
+          <button
+            className={`vote-button downvote ${userVote === -1 ? 'active' : ''}`}
+            onClick={() => handleVote(-1)}
+            disabled={!currentUserId || loadingVote}
+          >
+            ▼
+          </button>
+        </div>
         <button
           className="action-button comment-button"
           onClick={() => setShowComments((prev) => !prev)}
         >
           💬 {commentCount}
         </button>
-        <button className="action-button share-button">
-          📤
+        <button className="action-button share-button" onClick={handleShare}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+            <polyline points="16,6 12,2 8,6"></polyline>
+            <line x1="12" y1="2" x2="12" y2="15"></line>
+          </svg>
         </button>
-        <button className="action-button save-button">
-          🔖
+        <button className={`action-button save-button ${isSaved ? 'saved' : ''}`} onClick={handleSave}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
         </button>
       </div>
 
