@@ -12,8 +12,9 @@ TLDR/
 │   ├── user-service/          # User management (Port 8081)
 │   ├── summary-service/       # News summaries CRUD (Port 8082)
 │   ├── vote-service/          # Voting system (Port 8083)
-│   ├── comment-service/       # Comments (Port 8084)
-│   └── saved-service/         # Save for later (Port 8085)
+│   ├── comment-service/       # Comments & Notifications (Port 8084)
+│   ├── saved-service/         # Save for later (Port 8085)
+│   └── recommendation-service/ # Personalized recommendations (Port 8086)
 ├── frontend/                   # React application
 │   ├── components/            # Reusable UI components
 │   ├── pages/                 # Page components
@@ -38,12 +39,15 @@ TLDR/
 - GET /api/users/username/{username} - Get user by username
 - GET /api/users - Get all users
 - PUT /api/users/{id}/karma - Update user karma
+- PUT /api/users/{id}/upvotes - Update user total upvotes (auto-updates badge)
 
 **Features:**
 - Secure signup/login with JWT authentication
 - BCrypt password hashing with validation & sanitization
 - Password reset token lifecycle management
 - User profiles and karma system
+- Badge system (NEWBIE, BRONZE, SILVER, GOLD, PLATINUM)
+- Role-based access (USER, MODERATOR)
 - H2 in-memory database
 
 ### 2. Summary Service (Port 8082)
@@ -83,7 +87,7 @@ TLDR/
 - Vote removal
 
 ### 4. Comment Service (Port 8084)
-**Purpose:** Comment management
+**Purpose:** Comment management with notifications
 
 **Endpoints:**
 - POST /api/comments - Create comment
@@ -91,12 +95,27 @@ TLDR/
 - GET /api/comments/summary/{summaryId} - Get comments for summary
 - GET /api/comments/count/{summaryId} - Get comment count
 - DELETE /api/comments/{id} - Delete comment
+- POST /api/comments/{id}/likes - Like a comment
+- DELETE /api/comments/{id}/likes - Remove like
+- POST /api/comments/{id}/report - Report a comment
+- POST /api/comments/{id}/moderate/hide - Hide comment (moderators)
+- POST /api/comments/{id}/moderate/restore - Restore hidden comment
+- GET /api/notifications/user/{userId} - Get user's notifications
+- POST /api/notifications/{id}/read - Mark notification as read
+- POST /api/notifications/user/{userId}/read-all - Mark all as read
+- GET /api/notifications/user/{userId}/unread-count - Get unread count
+- POST /api/notifications/badge - Create badge notification
 
 **Features:**
 - Comment CRUD operations
 - Nested comments (parent-child)
+- Comment likes and like counting
+- Comment reporting and moderation
+- Hide/restore comments (moderator only)
+- Real-time notification system
+- Notification types: REPLY, LIKE, BADGE
+- Unread notification tracking
 - Pagination support
-- Comment counting
 
 ### 5. Saved Service (Port 8085)
 **Purpose:** Save summaries for later reading
@@ -112,19 +131,45 @@ TLDR/
 - Manage saved content
 - Check save status
 
+### 6. Recommendation Service (Port 8086)
+**Purpose:** Personalized content recommendations using hybrid filtering
+
+**Endpoints:**
+- GET /api/recommendations/user/{userId} - Get personalized recommendations
+- POST /api/recommendations/track - Track user behavior
+- POST /api/recommendations/feedback - Submit feedback on recommendations
+- GET /api/recommendations/preferences/{userId} - Get user preferences
+- POST /api/recommendations/preferences/{userId}/update - Update preferences
+- DELETE /api/recommendations/track - Remove vote behaviors
+
+**Features:**
+- Hybrid recommendation algorithm (content-based + collaborative filtering)
+- Behavior tracking (VIEW, UPVOTE, DOWNVOTE, COMMENT, SAVE)
+- User preference learning with time decay
+- Tag and author preference scoring
+- User similarity computation (cosine similarity)
+- Feedback mechanism (THUMBS_UP, THUMBS_DOWN, NOT_INTERESTED, HIDE)
+- Cold start handling with trending content
+- Real-time preference updates
+- Configurable weights and parameters
+
 ## Frontend Components
 
 ### Pages
 1. **HomePage** - Browse all summaries with sorting (recent/top)
 2. **SubmitPage** - Form to submit new summaries (auth required)
 3. **TrendingPage** - View trending summaries from last 24 hours
-4. **LoginPage** - Authenticate existing users with client-side validation
-5. **SignupPage** - Register new users with helpful validation hints
-6. **ForgotPasswordPage** - Start password reset flow
-7. **ResetPasswordPage** - Complete password reset using token
+4. **ForYouPage** - Personalized recommendations feed with feedback options
+5. **SearchPage** - Search summaries by tags and keywords
+6. **ProfilePage** - View karma, badges, upvotes, and manage submissions
+7. **NotificationsPage** - View and manage notifications
+8. **LoginPage** - Authenticate existing users with client-side validation
+9. **SignupPage** - Register new users with helpful validation hints
+10. **ForgotPasswordPage** - Start password reset flow
+11. **ResetPasswordPage** - Complete password reset using token
 
 ### Components
-1. **Header** - Navigation bar with auth-aware actions
+1. **Header** - Navigation bar with auth-aware actions and notification bell
 2. **SummaryCard** - Display individual summary with voting (auth-aware)
 3. **AuthContext** - React context for session and token management
 
@@ -137,13 +182,18 @@ TLDR/
 - [x] News summary submission with tags
 - [x] Upvoting/downvoting system
 - [x] Commenting with nested replies
+- [x] Comment likes and moderation
 - [x] Tagging by topic
 - [x] Save summaries for later
 - [x] Daily trending digest generation
 - [x] Secure authentication with password recovery
+- [x] Badge system based on upvotes
+- [x] Personalized recommendations
+- [x] Real-time notifications
+- [x] Search functionality (tag-based)
 
 ### ✅ Technical Features
-- [x] Microservices architecture
+- [x] Microservices architecture (6 services)
 - [x] RESTful API design
 - [x] Spring Boot 3.1.5
 - [x] React 18 frontend
@@ -154,6 +204,9 @@ TLDR/
 - [x] Pagination
 - [x] Data validation
 - [x] JWT-based authentication with BCrypt hashing
+- [x] Role-based access control (USER, MODERATOR)
+- [x] Hybrid recommendation algorithm
+- [x] Real-time notification system
 
 ### ✅ Developer Experience
 - [x] Complete documentation suite
@@ -195,6 +248,9 @@ TLDR/
 - email: String (unique)
 - password: String (hashed)
 - karma: Integer
+- totalUpvotes: Integer
+- badge: String (NEWBIE, BRONZE, SILVER, GOLD, PLATINUM)
+- role: String (USER, MODERATOR)
 - createdAt: LocalDateTime
 ```
 
@@ -205,6 +261,18 @@ TLDR/
 - user: User
 - expiresAt: LocalDateTime
 - used: Boolean
+```
+
+### Notification
+```java
+- id: Long
+- userId: Long
+- type: String (REPLY, LIKE, BADGE)
+- message: String
+- relatedCommentId: Long
+- relatedSummaryId: Long
+- read: Boolean
+- createdAt: LocalDateTime
 ```
 
 ### Summary
@@ -237,6 +305,11 @@ TLDR/
 - userId: Long
 - content: String (max 500 chars)
 - parentId: Long (nullable, for nested comments)
+- likeCount: Integer
+- likedBy: Set<Long> (user IDs who liked)
+- reportCount: Integer
+- reportedBy: Set<Long> (user IDs who reported)
+- isHidden: Boolean
 - createdAt: LocalDateTime
 ```
 
@@ -247,6 +320,36 @@ TLDR/
 - summaryId: Long
 - savedAt: LocalDateTime
 - Unique constraint: (userId, summaryId)
+```
+
+### UserBehavior (Recommendation)
+```java
+- id: Long
+- userId: Long
+- summaryId: Long
+- behaviorType: Enum (VIEW, UPVOTE, DOWNVOTE, COMMENT, SAVE)
+- weight: Double (0.5, 2.0, -1.0, 1.5, 1.8)
+- timestamp: LocalDateTime
+```
+
+### UserPreference (Recommendation)
+```java
+- id: Long
+- userId: Long
+- tagScores: Map<String, Double>
+- authorScores: Map<Long, Double>
+- totalInteractions: Integer
+- preferenceScore: Double
+- lastUpdated: LocalDateTime
+```
+
+### RecommendationFeedback
+```java
+- id: Long
+- userId: Long
+- summaryId: Long
+- feedbackType: Enum (THUMBS_UP, THUMBS_DOWN, NOT_INTERESTED, HIDE)
+- timestamp: LocalDateTime
 ```
 
 ## How to Run
@@ -325,13 +428,16 @@ curl http://localhost:8082/api/summaries/trending
 
 ## Success Metrics
 
-✅ **5 microservices** fully implemented
-✅ **20+ REST endpoints** across all services
-✅ **7 React pages** with authentication flows
+✅ **6 microservices** fully implemented
+✅ **50+ REST endpoints** across all services
+✅ **11 React pages** with authentication flows
 ✅ **100% Docker support** for deployment
-✅ **Complete documentation** suite (4 files)
+✅ **Complete documentation** suite (7 files)
 ✅ **Sample data script** for testing
 ✅ **Production-ready structure** with clean separation
+✅ **Personalized recommendations** with hybrid filtering
+✅ **Real-time notifications** system
+✅ **Badge achievement** system
 
 ## Conclusion
 

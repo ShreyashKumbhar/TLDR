@@ -14,6 +14,10 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - 🔥 **Daily Trending Digest** - View the top summaries from the last 24 hours
 - 👤 **Profile Dashboard** - Review your karma and manage/delete your submissions
 - 🔐 **User Accounts** - Secure signup, login, and password recovery workflows
+- 🎯 **Personalized Recommendations** - AI-powered content recommendations based on your interests
+- 🔔 **Real-time Notifications** - Get notified about replies, likes, and badge achievements
+- 🔍 **Search Functionality** - Search summaries by tags and keywords
+- 🏆 **Badge System** - Earn badges based on upvotes received
 
 ### Technical Features
 - Microservices architecture using Spring Boot
@@ -32,6 +36,7 @@ The application is built using a microservices architecture with the following s
 1. **User Service** (Port 8081)
    - User management and authentication
    - User karma tracking
+   - Badge system based on upvotes
 
 2. **Summary Service** (Port 8082)
    - News summary CRUD operations
@@ -46,18 +51,28 @@ The application is built using a microservices architecture with the following s
 4. **Comment Service** (Port 8084)
    - Comment creation and retrieval
    - Nested comment support
+   - Comment likes and moderation
+   - Real-time notifications system
 
 5. **Saved Service** (Port 8085)
    - Save summaries for later
    - Manage user's saved content
 
+6. **Recommendation Service** (Port 8086)
+   - Personalized content recommendations
+   - User behavior tracking
+   - Preference learning and adaptation
+
 ### Frontend (React)
 
 - Modern, responsive UI
 - Real-time voting and commenting
-- Tag filtering
+- Tag filtering and search
 - Trending digest view
+- Personalized recommendations feed
 - Submission form
+- Notification center
+- User profile with badge display
 
 ## Project Structure
 
@@ -68,7 +83,8 @@ TLDR/
 │   ├── summary-service/
 │   ├── vote-service/
 │   ├── comment-service/
-│   └── saved-service/
+│   ├── saved-service/
+│   └── recommendation-service/
 ├── frontend/
 │   ├── public/
 │   └── src/
@@ -84,6 +100,8 @@ TLDR/
 - **[Quick Start Guide](QUICKSTART.md)** - Get up and running in minutes
 - **[Architecture](ARCHITECTURE.md)** - System design and data flow
 - **[Contributing](CONTRIBUTING.md)** - How to contribute to the project
+- **[Badge System](BADGE_SYSTEM.md)** - Badge tiers and achievement system
+- **[Recommendation System](RECOMMENDATION_SYSTEM.md)** - Personalized content recommendations
 
 ## Getting Started
 
@@ -119,6 +137,10 @@ mvn spring-boot:run
 
 # Saved Service
 cd backend/saved-service
+mvn spring-boot:run
+
+# Recommendation Service
+cd backend/recommendation-service
 mvn spring-boot:run
 ```
 
@@ -199,12 +221,30 @@ This will start all services and the frontend. Access the application at http://
 - `POST /api/comments/{id}/moderate/hide?userId={moderatorId}` - Hide a comment (moderators)
 - `POST /api/comments/{id}/moderate/restore?userId={moderatorId}` - Restore a hidden comment
 
+#### Notifications
+- `GET /api/notifications/user/{userId}` - Get user's notifications (paginated)
+- `POST /api/notifications/{id}/read?userId={userId}` - Mark notification as read
+- `POST /api/notifications/user/{userId}/read-all` - Mark all notifications as read
+- `GET /api/notifications/user/{userId}/unread-count` - Get unread notification count
+- `POST /api/notifications/badge?userId={userId}&badge={badge}` - Create badge notification
+
 ### Saved Service (Port 8085)
 
 - `POST /api/saved` - Save summary
 - `GET /api/saved/user/{userId}` - Get user's saved summaries
 - `GET /api/saved/check?userId={id}&summaryId={id}` - Check if saved
 - `DELETE /api/saved?userId={id}&summaryId={id}` - Unsave summary
+
+### Recommendation Service (Port 8086)
+
+- `GET /api/recommendations/user/{userId}?limit=20` - Get personalized recommendations
+- `POST /api/recommendations/track?userId={id}&summaryId={id}&behaviorType={TYPE}` - Track user behavior (VIEW, UPVOTE, DOWNVOTE, COMMENT, SAVE)
+- `POST /api/recommendations/feedback` - Submit feedback on recommendations
+- `GET /api/recommendations/preferences/{userId}` - Get computed user preferences
+- `POST /api/recommendations/preferences/{userId}/update` - Manually update preferences
+- `DELETE /api/recommendations/track?userId={id}&summaryId={id}` - Remove vote behaviors
+
+> **Behavior Tracking:** The system automatically tracks user interactions to build personalized recommendations. Supported types: VIEW (0.5), UPVOTE (2.0), DOWNVOTE (-1.0), COMMENT (1.5), SAVE (1.8).
 
 ### User Service (Port 8081)
 
@@ -220,6 +260,7 @@ This will start all services and the frontend. Access the application at http://
 - `GET /api/users/{id}` - Get user by ID
 - `GET /api/users/username/{username}` - Get user by username
 - `PUT /api/users/{id}/karma?change={value}` - Update user karma
+- `PUT /api/users/{id}/upvotes?change={value}` - Update user total upvotes (auto-updates badge)
 
 ## Technology Stack
 
@@ -277,18 +318,21 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 ## Future Enhancements
 
-- User authentication and authorization (JWT/OAuth2)
-- Real-time notifications
-- Search functionality
-- User profiles and karma system
-- Content moderation tools
+- ~~User authentication and authorization (JWT/OAuth2)~~ ✅ Completed
+- ~~Real-time notifications~~ ✅ Completed
+- ~~Search functionality~~ ✅ Completed (tag-based)
+- ~~User profiles and karma system~~ ✅ Completed
+- ~~Content moderation tools~~ ✅ Completed
 - Mobile app (React Native)
 - Email digest subscriptions
 - Advanced filtering and sorting
+- Full-text search (Elasticsearch)
 - API rate limiting
 - Monitoring and logging (ELK Stack)
 - Service discovery (Eureka)
 - API Gateway (Spring Cloud Gateway)
+- Multi-language support
+- Dark mode theme
 
 ## License
 
