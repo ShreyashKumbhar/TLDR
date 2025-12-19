@@ -35,7 +35,7 @@ If you prefer to run services individually:
 
 ### Step 1: Start Backend Services
 
-Open 5 terminal windows and run each service:
+Open 6 terminal windows and run each service:
 
 **Terminal 1 - User Service:**
 ```bash
@@ -72,9 +72,16 @@ mvn spring-boot:run
 # Runs on http://localhost:8085
 ```
 
+**Terminal 6 - Recommendation Service:**
+```bash
+cd backend/recommendation-service
+mvn spring-boot:run
+# Runs on http://localhost:8086
+```
+
 ### Step 2: Start Frontend
 
-In a 6th terminal:
+In a 7th terminal:
 
 ```bash
 cd frontend
@@ -92,11 +99,14 @@ npm start
    - Explore the featured summaries already on the home page
    - Request a password reset to see the recovery flow (token appears in user-service logs)
    - Click "Submit" to create a new summary (requires login)
-   - Visit `/profile` to view your karma and manage/delete your submissions
+   - Visit `/profile` to view your karma, badges, upvotes, and manage/delete your submissions
    - Expand the comments on any summary to reply, like, report, and (as `techfan`) hide/restore comments
    - Vote on summaries
    - View trending summaries
-   - Filter by tags
+   - Filter by tags or use the search feature
+   - Check the `/foryou` page for personalized recommendations
+   - View notifications in the notification center
+   - Earn badges by receiving upvotes on your submissions
 
 ## Testing the APIs
 
@@ -156,6 +166,7 @@ Each service has an H2 database console for debugging:
 - Vote Service: http://localhost:8083/h2-console
 - Comment Service: http://localhost:8084/h2-console
 - Saved Service: http://localhost:8085/h2-console
+- Recommendation Service: http://localhost:8086/h2-console
 
 **Connection Details:**
 - JDBC URL: `jdbc:h2:mem:[servicename]db` (e.g., `jdbc:h2:mem:summarydb`)

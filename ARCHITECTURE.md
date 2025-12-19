@@ -10,6 +10,10 @@
 │  │   Home   │  │  Submit  │  │ Trending │  │   Tags   │       │
 │  │   Page   │  │   Page   │  │   Page   │  │  Filter  │       │
 │  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
+│  │  For You │  │  Search  │  │ Notific. │  │ Profile  │       │
+│  │   Page   │  │   Page   │  │   Page   │  │   Page   │       │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │
 └────────────────────────┬────────────────────────────────────────┘
                         │ HTTP/REST
                         │
@@ -34,6 +38,7 @@
 
 Additional Services:
 - Saved Service (Port: 8085) - Save summaries for later
+- Recommendation Service (Port: 8086) - Personalized content recommendations
 - Tag Service (future) - Advanced tag management
 - Digest Service (future) - Scheduled digest generation
 ```
@@ -127,6 +132,11 @@ Frontend
 - userId: Long
 - content: String (max 500 chars)
 - parentId: Long (for nested comments)
+- likeCount: Integer
+- likedBy: Set<Long> (user IDs)
+- reportCount: Integer
+- reportedBy: Set<Long> (user IDs)
+- isHidden: Boolean
 - createdAt: LocalDateTime
 ```
 
@@ -137,5 +147,40 @@ Frontend
 - email: String
 - password: String (encrypted)
 - karma: Integer
+- totalUpvotes: Integer
+- badge: String (NEWBIE, BRONZE, SILVER, GOLD, PLATINUM)
+- role: String (USER, MODERATOR)
 - createdAt: LocalDateTime
+```
+
+### Notification
+```
+- id: Long
+- userId: Long
+- type: String (REPLY, LIKE, BADGE)
+- message: String
+- relatedCommentId: Long
+- relatedSummaryId: Long
+- read: Boolean
+- createdAt: LocalDateTime
+```
+
+### UserBehavior (Recommendation)
+```
+- id: Long
+- userId: Long
+- summaryId: Long
+- behaviorType: Enum (VIEW, UPVOTE, DOWNVOTE, COMMENT, SAVE)
+- timestamp: LocalDateTime
+```
+
+### UserPreference (Recommendation)
+```
+- id: Long
+- userId: Long
+- tagScores: Map<String, Double>
+- authorScores: Map<Long, Double>
+- totalInteractions: Integer
+- preferenceScore: Double
+- lastUpdated: LocalDateTime
 ```

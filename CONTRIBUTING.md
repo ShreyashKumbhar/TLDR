@@ -87,8 +87,10 @@ backend/
 frontend/
   src/
     components/     # Reusable React components
-    pages/         # Page components
+    pages/         # Page components (HomePage, ForYouPage, NotificationsPage, etc.)
     services/      # API service layer
+    context/       # React contexts (AuthContext)
+    hooks/         # Custom React hooks
 ```
 
 ## Adding a New Feature
@@ -205,21 +207,27 @@ When adding/modifying endpoints:
 - Enhance UI/UX
 - Fix typos in documentation
 - Add code comments
+- Improve notification styling
+- Add badge icons
 
 ### Medium
 - Add new API endpoints
 - Create new React components
-- Implement search functionality
-- Add pagination
+- Implement advanced search functionality
+- Add pagination improvements
 - Improve error handling
+- Enhance recommendation algorithm
+- Add more notification types
 
 ### Advanced
-- Add authentication/authorization
+- Add authentication/authorization enhancements
 - Implement caching
 - Add rate limiting
 - Service discovery
 - Performance optimization
 - Add monitoring/logging
+- Machine learning for recommendations
+- Real-time updates with WebSocket
 
 ## Pull Request Guidelines
 
