@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useUI } from '../context/UIContext';
 import { summaryService } from '../services/api';
 import SummaryCard from '../components/SummaryCard';
 
@@ -78,29 +79,6 @@ function HomePage() {
 
   return (
     <div className="home-layout">
-      {/* Left Sidebar - Followed Users */}
-      <div className="left-sidebar">
-        <div className="sidebar-section">
-          <h3>Following</h3>
-          {followedUsers.length === 0 ? (
-            <p className="sidebar-empty">No users followed yet</p>
-          ) : (
-            followedUsers.map(user => (
-              <div key={user.id} className="followed-user">
-                <div className="user-avatar-small">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-                <div className="user-info-compact">
-                  <span className="username-small">{user.username}</span>
-                  <span className="activity-small">{user.activity}</span>
-                  <span className="last-active">{user.lastActive}</span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
       {/* Main Feed */}
       <div className="main-feed">
         <div className="feed-header">
@@ -155,8 +133,28 @@ function HomePage() {
       )}
       </div>
 
-      {/* Right Sidebar - Top Stories */}
+      {/* Right Sidebar - Following and Top Stories */}
       <div className="right-sidebar">
+        <div className="sidebar-section">
+          <h3>Following</h3>
+          {followedUsers.length === 0 ? (
+            <p className="sidebar-empty">No users followed yet</p>
+          ) : (
+            followedUsers.map(user => (
+              <div key={user.id} className="followed-user">
+                <div className="user-avatar-small">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
+                <div className="user-info-compact">
+                  <span className="username-small">{user.username}</span>
+                  <span className="activity-small">{user.activity}</span>
+                  <span className="last-active">{user.lastActive}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         <div className="sidebar-section">
           <h3>Top Stories</h3>
           {topStories.length === 0 ? (
