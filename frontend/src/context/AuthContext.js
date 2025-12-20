@@ -77,7 +77,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     clearSession();
-    navigate('/', { replace: true });
+    navigate('/login', { replace: true });
   };
 
   const requestPasswordReset = async (payload) => {

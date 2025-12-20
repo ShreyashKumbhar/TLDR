@@ -106,7 +106,6 @@ function ProfilePage() {
       </div>
       <div className="profile-actions">
         <Link to="/submit" className="button edit-profile-button">Submit a Summary</Link>
-        <button className="button logout-button" onClick={logout}>Logout</button>
       </div>
 
       <div className="profile-tabs">

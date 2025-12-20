@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useUI } from '../context/UIContext';
 import { recommendationService } from '../services/api';
 import SummaryCard from '../components/SummaryCard';
 
@@ -65,7 +66,10 @@ function ForYouPage() {
   }
 
   return (
-    <div className="feed">
+    <div className="feed wide-feed">
+      <div className="feed-background">
+        <div className="background-pattern"></div>
+      </div>
       <div className="feed-header">
         <h2>For You</h2>
       </div>
@@ -83,9 +87,15 @@ function ForYouPage() {
       {!loading && error && <div className="error">{error}</div>}
       
       {!loading && !error && recommendations.length === 0 && (
-        <div className="post-card">
+        <div className="empty-state">
+          <div className="empty-icon">🎯</div>
+          <h3>Building Your Perfect Feed</h3>
           <p>We need more information about your preferences to provide recommendations.</p>
           <p>Start by exploring summaries, voting, and commenting!</p>
+          <div className="empty-actions">
+            <Link to="/" className="action-button primary">Explore Home</Link>
+            <Link to="/search" className="action-button secondary">Search Content</Link>
+          </div>
         </div>
       )}
 

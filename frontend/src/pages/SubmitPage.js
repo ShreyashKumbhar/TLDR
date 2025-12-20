@@ -59,19 +59,23 @@ function SubmitPage() {
 
   if (!user) {
     return (
-      <div className="container">
-        <div className="summary-card">
-          <h2 style={{ marginBottom: '16px' }}>Sign in to submit a summary</h2>
-          <p style={{ marginBottom: '20px', color: '#586069' }}>
-            You need an account to share new summaries with the community.
-          </p>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link to="/login" className="button">
-              Sign In
-            </Link>
-            <Link to="/signup" className="button button-secondary">
-              Create Account
-            </Link>
+      <div className="feed">
+        <div className="feed-background">
+          <div className="background-pattern"></div>
+        </div>
+        <div className="feed-header">
+          <h2>Submit Summary</h2>
+        </div>
+        <p className="feed-description">
+          Share knowledge with the community
+        </p>
+        <div className="submit-placeholder">
+          <div className="placeholder-icon">📝</div>
+          <h3>Sign in to contribute</h3>
+          <p>You need an account to share new summaries with the community.</p>
+          <div className="empty-actions">
+            <Link to="/login" className="action-button primary">Sign In</Link>
+            <Link to="/signup" className="action-button secondary">Create Account</Link>
           </div>
         </div>
       </div>
@@ -79,69 +83,86 @@ function SubmitPage() {
   }
 
   return (
-    <div className="submit-container">
-      <div className="summary-card submit-form">
-        <h2 style={{ marginBottom: '20px' }}>Submit a New Summary</h2>
-
-        {errorMessage && <div className="error">{errorMessage}</div>}
-
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="title">Title</label>
-            <input
-              id="title"
-              type="text"
-              name="title"
-              className="form-control"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
+    <div className="feed">
+      <div className="feed-background">
+        <div className="background-pattern"></div>
+      </div>
+      <div className="feed-header">
+        <h2>Submit Summary</h2>
+      </div>
+      <p className="feed-description">
+        Share valuable insights and help others learn faster
+      </p>
+      <div className="submit-container">
+        <div className="summary-card submit-form">
+          <div className="submit-intro">
+            <h3>Contribute to the Knowledge Base</h3>
+            <p>Help others discover and understand important topics by submitting high-quality summaries.</p>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="content">Summary (TLDR)</label>
-            <textarea
-              id="content"
-              name="content"
-              className="form-control"
-              value={formData.content}
-              onChange={handleChange}
-              placeholder="Provide a concise summary highlighting key points..."
-              required
-            />
-          </div>
+          {errorMessage && <div className="error">{errorMessage}</div>}
 
-          <div className="form-group">
-            <label htmlFor="originalUrl">Original Article URL</label>
-            <input
-              id="originalUrl"
-              type="url"
-              name="originalUrl"
-              className="form-control"
-              value={formData.originalUrl}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="form-group">
+              <label htmlFor="title">Title</label>
+              <input
+                id="title"
+                type="text"
+                name="title"
+                className="form-control"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Enter a clear, descriptive title"
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="tags">Tags (comma-separated)</label>
-            <input
-              id="tags"
-              type="text"
-              name="tags"
-              className="form-control"
-              value={formData.tags}
-              onChange={handleChange}
-              placeholder="e.g., technology, politics, science"
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="content">Summary (TLDR)</label>
+              <textarea
+                id="content"
+                name="content"
+                className="form-control"
+                value={formData.content}
+                onChange={handleChange}
+                placeholder="Provide a concise summary highlighting key points..."
+                rows="6"
+                required
+              />
+            </div>
 
-          <button type="submit" className="button" disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Submit Summary'}
-          </button>
-        </form>
+            <div className="form-group">
+              <label htmlFor="originalUrl">Original Article URL</label>
+              <input
+                id="originalUrl"
+                type="url"
+                name="originalUrl"
+                className="form-control"
+                value={formData.originalUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/article"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="tags">Tags (comma-separated)</label>
+              <input
+                id="tags"
+                type="text"
+                name="tags"
+                className="form-control"
+                value={formData.tags}
+                onChange={handleChange}
+                placeholder="e.g., technology, politics, science"
+              />
+            </div>
+
+            <button type="submit" className="button" disabled={submitting}>
+              {submitting ? 'Submitting...' : '🚀 Submit Summary'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

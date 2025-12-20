@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useUI, Themes } from '../context/UIContext';
 import { notificationService } from '../services/api';
 
 function TopBar() {
   const { user, logout } = useAuth();
+  const { theme } = useUI();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ function TopBar() {
           </svg>
         </Link>
         <Link to="/" className="logo-link">
-          <h1>TLDR</h1>
+          <img src={theme === Themes.DARK ? "/darklogo.png" : "/logo.png"} alt="TLDR" style={{height: '40px'}} />
         </Link>
         <div className="top-actions">
           {user ? (

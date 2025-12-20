@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TopBar from './components/Header';
-import BottomNav from './components/BottomNav';
+import Sidebar from './components/Sidebar';
 import HomePage from './pages/HomePage';
 import SubmitPage from './pages/SubmitPage';
 import TrendingPage from './pages/TrendingPage';
@@ -13,33 +13,47 @@ import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
 import ForYouPage from './pages/ForYouPage';
 import SearchPage from './pages/SearchPage';
+import AboutPage from './pages/AboutPage';
+import HowToUsePage from './pages/HowToUsePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfUsePage from './pages/TermsOfUsePage';
 import { AuthProvider } from './context/AuthContext';
-import { UIProvider } from './context/UIContext';
+import { UIProvider, useUI } from './context/UIContext';
+
+function AppContent() {
+  return (
+    <div className="App">
+      <TopBar />
+      <Sidebar />
+      <main className="main-content sidebar-open">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/submit" element={<SubmitPage />} />
+          <Route path="/trending" element={<TrendingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/foryou" element={<ForYouPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/how-to-use" element={<HowToUsePage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfUsePage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <UIProvider>
-          <div className="App">
-            <TopBar />
-            <main className="main-content">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/submit" element={<SubmitPage />} />
-                <Route path="/trending" element={<TrendingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="/foryou" element={<ForYouPage />} />
-              </Routes>
-            </main>
-            <BottomNav />
-          </div>
+          <AppContent />
         </UIProvider>
       </AuthProvider>
     </Router>

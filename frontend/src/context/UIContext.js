@@ -15,6 +15,11 @@ export const MoodFilters = {
   MOST_DEBATED: 'most-debated'
 };
 
+export const Themes = {
+  LIGHT: 'light',
+  DARK: 'dark'
+};
+
 const MoodTokens = {
   [MoodFilters.CALM]: {
     name: 'Calm',
@@ -69,6 +74,7 @@ const UIContext = createContext(null);
 export function UIProvider({ children }) {
   const [layoutMode, setLayoutMode] = useState(LayoutModes.DYNAMIC_CANVAS);
   const [mood, setMood] = useState(MoodFilters.CALM);
+  const [theme, setTheme] = useState(Themes.LIGHT);
   const [isCommandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [badge, setBadge] = useState(null);
 
@@ -78,7 +84,8 @@ export function UIProvider({ children }) {
     root.style.setProperty('--motion-speed-factor', token.speedFactor.toString());
     root.style.setProperty('--parallax-strength', token.parallax.toString());
     root.dataset.tldrTheme = token.theme;
-  }, [mood]);
+    root.dataset.theme = theme;
+  }, [mood, theme]);
 
   const toggleCommandPalette = useCallback(() => {
     setCommandPaletteOpen((prev) => !prev);
@@ -105,13 +112,16 @@ export function UIProvider({ children }) {
     mood,
     setMood,
     moodTokens: MoodTokens,
+    theme,
+    setTheme,
+    themes: Themes,
     isCommandPaletteOpen,
     toggleCommandPalette,
     openCommandPalette,
     closeCommandPalette,
     badge,
     triggerBadge
-  }), [layoutMode, mood, isCommandPaletteOpen, toggleCommandPalette, openCommandPalette, closeCommandPalette, badge, triggerBadge]);
+  }), [layoutMode, mood, theme, isCommandPaletteOpen, toggleCommandPalette, openCommandPalette, closeCommandPalette, badge, triggerBadge]);
 
   return (
     <UIContext.Provider value={value}>
