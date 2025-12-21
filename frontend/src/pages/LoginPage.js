@@ -99,11 +99,13 @@ function LoginPage() {
         </form>
 
         <div className="auth-links">
-          <Link to="/forgot-password" className="link">Forgot password?</Link>
-          <span>
+          <div>
+            <Link to="/forgot-password" className="link">Forgot password?</Link>
+          </div>
+          <div>
             Need an account?{' '}
             <Link to="/signup" className="link">Create one</Link>
-          </span>
+          </div>
         </div>
         </div>
       </div>
