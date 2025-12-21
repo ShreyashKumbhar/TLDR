@@ -38,7 +38,7 @@ function TopBar() {
           </svg>
         </Link>
         <Link to="/" className="logo-link">
-          <img src={theme === Themes.DARK ? "/darklogo.png" : "/logo.png"} alt="TLDR" style={{height: '40px'}} />
+          <img src={theme === Themes.DARK ? "/darklogo.png" : "/logo.png"} alt="TLDR" style={{height: '56px'}} />
         </Link>
         <div className="top-actions">
           {user ? (

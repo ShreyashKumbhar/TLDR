@@ -117,10 +117,6 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <img src="/logo.png" alt="TLDR" style={{height: '24px'}} />
-      </div>
-
       <nav className="sidebar-nav">
         <div className="sidebar-section">
           <h4>Main</h4>

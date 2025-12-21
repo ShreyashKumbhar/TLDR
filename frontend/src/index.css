@@ -59,8 +59,12 @@ body {
 .main-content {
   flex: 1;
   padding: 32px 16px;
-  margin-left: 280px; /* sidebar offset – ONLY HERE */
+  margin-left: 0;
   min-height: calc(100vh - 60px); /* Account for fixed header */
+}
+
+.main-content.sidebar-open {
+  margin-left: 280px; /* sidebar offset – ONLY HERE */
 }
 
 /* =====================
@@ -265,8 +269,12 @@ body {
 .main-content {
   flex: 1;
   padding: 24px 32px;
-  margin-left: 280px;
+  margin-left: 0;
   margin-top: 60px; /* header height */
+}
+
+.main-content.sidebar-open {
+  margin-left: 280px; /* sidebar offset */
 }
 
 /* =====================

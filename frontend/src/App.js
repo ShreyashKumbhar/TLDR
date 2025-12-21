@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import TopBar from './components/Header';
 import Sidebar from './components/Sidebar';
 import HomePage from './pages/HomePage';
@@ -21,11 +21,14 @@ import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUI } from './context/UIContext';
 
 function AppContent() {
+  const location = useLocation();
+  const isAuthPage = ['/login', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
+  
   return (
     <div className="App">
       <TopBar />
-      <Sidebar />
-      <main className="main-content sidebar-open">
+      {!isAuthPage && <Sidebar />}
+      <main className={`main-content ${!isAuthPage ? 'sidebar-open' : ''}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/search" element={<SearchPage />} />
