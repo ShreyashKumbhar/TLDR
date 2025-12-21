@@ -37,6 +37,13 @@ public class UserPreference {
     @Column(name = "score")
     private Map<Long, Double> authorPreferences = new HashMap<>();
     
+    // Circle preferences: circleId -> score
+    @ElementCollection
+    @CollectionTable(name = "user_circle_preferences", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "circle_id")
+    @Column(name = "score")
+    private Map<Long, Double> circlePreferences = new HashMap<>();
+    
     // Overall preference score (normalized)
     @Column(name = "preference_score")
     private Double preferenceScore = 0.0;

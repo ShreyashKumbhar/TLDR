@@ -37,6 +37,11 @@ public class Summary {
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
     
+    @ElementCollection
+    @CollectionTable(name = "summary_circles", joinColumns = @JoinColumn(name = "summary_id"))
+    @Column(name = "circle_id")
+    private Set<Long> circleIds = new HashSet<>();
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

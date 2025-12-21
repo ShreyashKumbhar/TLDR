@@ -103,6 +103,7 @@ function Sidebar() {
     { path: '/', icon: 'home', label: 'Home' },
     { path: '/search', icon: 'search', label: 'Search' },
     { path: '/foryou', icon: 'star', label: 'For You' },
+    { path: '/circles', icon: 'home', label: 'Circles' },
     { path: '/submit', icon: 'plus', label: 'Submit' },
     { path: '/trending', icon: 'trending-up', label: 'Trending' },
     { path: '/profile', icon: 'user', label: 'Profile' },

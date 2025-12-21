@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
 import ForYouPage from './pages/ForYouPage';
 import SearchPage from './pages/SearchPage';
+import CirclesPage from './pages/CirclesPage';
 import AboutPage from './pages/AboutPage';
 import HowToUsePage from './pages/HowToUsePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -41,6 +42,8 @@ function AppContent() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/foryou" element={<ForYouPage />} />
+          <Route path="/circles" element={<CirclesPage />} />
+          <Route path="/circles/:id" element={<CirclesPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/how-to-use" element={<HowToUsePage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />

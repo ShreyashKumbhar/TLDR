@@ -31,6 +31,9 @@ public class SummaryService {
     @Value("${services.user.base-url:http://user-service:8081}")
     private String userServiceBaseUrl;
     
+    @Value("${services.circle.base-url:http://circle-service:8087}")
+    private String circleServiceBaseUrl;
+    
     private final Map<Long, UserInfo> userCache = new ConcurrentHashMap<>();
     
     // Clear cache method for refreshing user info
@@ -55,6 +58,18 @@ public class SummaryService {
         Summary savedSummary = summaryRepository.save(summary);
         // Clear cache for this user to force fresh fetch when displaying
         clearUserCache(savedSummary.getUserId());
+        
+        // Notify circle-service about new post
+        if (savedSummary.getCircleIds() != null && !savedSummary.getCircleIds().isEmpty()) {
+            for (Long circleId : savedSummary.getCircleIds()) {
+                try {
+                    String url = String.format("%s/api/circles/%d/increment-post", circleServiceBaseUrl, circleId);
+                    restTemplate.postForEntity(url, null, Void.class);
+                } catch (Exception ex) {
+                    log.warn("Failed to increment post count for circle {}: {}", circleId, ex.getMessage());
+                }
+            }
+        }
         
         return convertToDTO(savedSummary);
     }
@@ -86,6 +101,12 @@ public class SummaryService {
     public Page<SummaryDTO> getSummariesByUser(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return summaryRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(this::convertToDTO);
+    }
+    
+    public Page<SummaryDTO> getSummariesByCircle(Long circleId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return summaryRepository.findByCircleId(circleId, pageable)
                 .map(this::convertToDTO);
     }
     
@@ -137,6 +158,7 @@ public class SummaryService {
             userInfo != null ? userInfo.getUsername() : "User " + summary.getUserId(),
             userInfo != null ? userInfo.getBadge() : "NEWBIE",
             summary.getTags(),
+            summary.getCircleIds() != null ? summary.getCircleIds() : new java.util.HashSet<>(),
             summary.getCreatedAt(),
             summary.getVoteCount(),
             summary.getCommentCount()

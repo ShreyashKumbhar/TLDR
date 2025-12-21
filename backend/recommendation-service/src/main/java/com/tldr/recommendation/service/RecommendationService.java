@@ -46,6 +46,9 @@ public class RecommendationService {
     @Value("${services.saved.base-url:http://saved-service:8085}")
     private String savedServiceBaseUrl;
     
+    @Value("${services.circle.base-url:http://circle-service:8087}")
+    private String circleServiceBaseUrl;
+    
     @Value("${recommendation.content-weight:0.6}")
     private double contentWeight;
     
@@ -284,6 +287,34 @@ public class RecommendationService {
             log.warn("Error processing author in calculateContentBasedScore: {}", e.getMessage());
         }
         
+        // Circle matching - boost score for summaries in followed circles
+        try {
+            Object circleIdsObj = summary.get("circleIds");
+            if (circleIdsObj != null) {
+                Set<Long> circleIds = null;
+                if (circleIdsObj instanceof Set) {
+                    @SuppressWarnings("unchecked")
+                    Set<Long> circleIdsSet = (Set<Long>) circleIdsObj;
+                    circleIds = circleIdsSet;
+                } else if (circleIdsObj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Long> circleIdsList = (List<Long>) circleIdsObj;
+                    circleIds = new HashSet<>(circleIdsList);
+                }
+                if (circleIds != null && !circleIds.isEmpty()) {
+                    for (Long circleId : circleIds) {
+                        Double circlePreference = preference.getCirclePreferences().get(circleId);
+                        if (circlePreference != null) {
+                            score += circlePreference * 2.0; // Circle preference weighted very high
+                            totalWeight += 2.0;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Error processing circles in calculateContentBasedScore: {}", e.getMessage());
+        }
+        
         return totalWeight > 0 ? score / totalWeight : 0.0;
     }
     
@@ -434,6 +465,42 @@ public class RecommendationService {
             } catch (Exception e) {
                 log.warn("Error processing author for summary {}: {}", summaryId, e.getMessage());
             }
+            
+            // Update circle preferences
+            try {
+                Object circleIdsObj = summary.get("circleIds");
+                if (circleIdsObj != null) {
+                    Set<Long> circleIds = null;
+                    if (circleIdsObj instanceof Set) {
+                        @SuppressWarnings("unchecked")
+                        Set<Long> circleIdsSet = (Set<Long>) circleIdsObj;
+                        circleIds = circleIdsSet;
+                    } else if (circleIdsObj instanceof List) {
+                        @SuppressWarnings("unchecked")
+                        List<Long> circleIdsList = (List<Long>) circleIdsObj;
+                        circleIds = new HashSet<>(circleIdsList);
+                    }
+                    if (circleIds != null && !circleIds.isEmpty()) {
+                        for (Long circleId : circleIds) {
+                            preference.getCirclePreferences().merge(circleId, summaryWeight, Double::sum);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Error processing circles for summary {}: {}", summaryId, e.getMessage());
+            }
+        }
+        
+        // Fetch followed circles and add them to preferences with high weight
+        try {
+            List<Map<String, Object>> followedCircles = fetchFollowedCircles(userId);
+            for (Map<String, Object> circle : followedCircles) {
+                Long circleId = Long.valueOf(circle.get("id").toString());
+                // Give followed circles a high base preference
+                preference.getCirclePreferences().merge(circleId, 1.0, Double::max);
+            }
+        } catch (Exception e) {
+            log.warn("Error fetching followed circles for user {}: {}", userId, e.getMessage());
         }
         
         // Normalize preferences
@@ -441,6 +508,7 @@ public class RecommendationService {
             final double finalTotalWeight = totalWeight; // Capture for lambda
             preference.getTagPreferences().replaceAll((k, v) -> v / finalTotalWeight);
             preference.getAuthorPreferences().replaceAll((k, v) -> v / finalTotalWeight);
+            // Circle preferences are already normalized or set to 1.0 for followed circles
         }
         
         preference.setTotalInteractions(behaviors.size());
@@ -592,6 +660,21 @@ public class RecommendationService {
             log.error("Error fetching fallback popular recommendations", e);
         }
         return Collections.emptyList();
+    }
+    
+    private List<Map<String, Object>> fetchFollowedCircles(Long userId) {
+        try {
+            ResponseEntity<List> response = restTemplate.getForEntity(
+                circleServiceBaseUrl + "/api/circles/followed?userId=" + userId, List.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> circles = response.getBody();
+                return circles;
+            }
+        } catch (Exception e) {
+            log.warn("Error fetching followed circles for user {}: {}", userId, e.getMessage());
+        }
+        return new ArrayList<>();
     }
     
     private List<Map<String, Object>> fetchAllSummaries() {

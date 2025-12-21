@@ -22,4 +22,7 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
     
     @Query("SELECT s FROM Summary s WHERE s.createdAt >= :since ORDER BY s.voteCount DESC")
     List<Summary> findTrendingSince(LocalDateTime since, Pageable pageable);
+    
+    @Query("SELECT s FROM Summary s JOIN s.circleIds c WHERE c = :circleId")
+    Page<Summary> findByCircleId(Long circleId, Pageable pageable);
 }

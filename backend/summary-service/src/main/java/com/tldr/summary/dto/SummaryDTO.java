@@ -19,6 +19,7 @@ public class SummaryDTO {
     private String username;
     private String userBadge;
     private Set<String> tags;
+    private Set<Long> circleIds;
     private LocalDateTime createdAt;
     private Integer voteCount;
     private Integer commentCount;

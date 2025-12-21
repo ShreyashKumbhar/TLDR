@@ -59,6 +59,16 @@ services:
     networks:
       - tldr-network
 
+  circle-service:
+    build:
+      context: ./backend/circle-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tldr-network
+
   frontend:
     build:
       context: ./frontend
@@ -71,6 +81,7 @@ services:
       - comment-service
       - saved-service
       - recommendation-service
+      - circle-service
     networks:
       - tldr-network
 

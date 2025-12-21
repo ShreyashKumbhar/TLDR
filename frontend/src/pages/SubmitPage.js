@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { summaryService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import CircleSelector from '../components/CircleSelector';
 
 function SubmitPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function SubmitPage() {
     originalUrl: '',
     tags: ''
   });
+  const [selectedCircles, setSelectedCircles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -44,7 +46,8 @@ function SubmitPage() {
         content: formData.content.trim(),
         originalUrl: formData.originalUrl.trim(),
         userId: user.id,
-        tags: tagsArray
+        tags: tagsArray,
+        circleIds: selectedCircles.length > 0 ? selectedCircles : [1] // Default to Global if none selected
       });
 
       navigate('/', { replace: true });
@@ -157,6 +160,12 @@ function SubmitPage() {
                 placeholder="e.g., technology, politics, science"
               />
             </div>
+
+            <CircleSelector
+              selectedCircles={selectedCircles}
+              onCirclesChange={setSelectedCircles}
+              userId={user.id}
+            />
 
             <button type="submit" className="button" disabled={submitting}>
               {submitting ? 'Submitting...' : '🚀 Submit Summary'}

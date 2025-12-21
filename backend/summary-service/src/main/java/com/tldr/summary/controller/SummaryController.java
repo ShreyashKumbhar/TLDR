@@ -74,6 +74,14 @@ public class SummaryController {
         return ResponseEntity.ok(summaryService.getTrendingDigest());
     }
     
+    @GetMapping("/circle/{circleId}")
+    public ResponseEntity<Page<SummaryDTO>> getSummariesByCircle(
+            @PathVariable Long circleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(summaryService.getSummariesByCircle(circleId, page, size));
+    }
+    
     @PutMapping("/{id}/votes")
     public ResponseEntity<SummaryDTO> updateVoteCount(@PathVariable Long id, @RequestParam Integer change) {
         SummaryDTO summary = summaryService.updateVoteCount(id, change);

@@ -26,6 +26,10 @@ const recommendationServiceClient = axios.create({
   baseURL: `${API_BASE_URL}:8086/api`
 });
 
+const circleServiceClient = axios.create({
+  baseURL: `${API_BASE_URL}:8087/api`
+});
+
 export const summaryService = {
   getAllSummaries: (page = 0, size = 20) => 
     summaryServiceClient.get(`/summaries?page=${page}&size=${size}`),
@@ -179,4 +183,49 @@ export const recommendationService = {
 
   updatePreferences: (userId) =>
     recommendationServiceClient.post(`/recommendations/preferences/${userId}/update`)
+};
+
+export const circleService = {
+  getAllCircles: (page = 0, size = 20, userId = null) => {
+    const url = userId 
+      ? `/circles?page=${page}&size=${size}&userId=${userId}`
+      : `/circles?page=${page}&size=${size}`;
+    return circleServiceClient.get(url);
+  },
+  
+  getCircleById: (id, userId = null) => {
+    const url = userId 
+      ? `/circles/${id}?userId=${userId}`
+      : `/circles/${id}`;
+    return circleServiceClient.get(url);
+  },
+  
+  getCirclesByType: (type, page = 0, size = 20, userId = null) => {
+    const url = userId 
+      ? `/circles/type/${type}?page=${page}&size=${size}&userId=${userId}`
+      : `/circles/type/${type}?page=${page}&size=${size}`;
+    return circleServiceClient.get(url);
+  },
+  
+  searchCircles: (query, page = 0, size = 20, userId = null) => {
+    const url = userId 
+      ? `/circles/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}&userId=${userId}`
+      : `/circles/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+    return circleServiceClient.get(url);
+  },
+  
+  getFollowedCircles: (userId) =>
+    circleServiceClient.get(`/circles/followed?userId=${userId}`),
+  
+  followCircle: (circleId, userId) =>
+    circleServiceClient.post(`/circles/${circleId}/follow?userId=${userId}`),
+  
+  unfollowCircle: (circleId, userId) =>
+    circleServiceClient.delete(`/circles/${circleId}/follow?userId=${userId}`),
+  
+  createCircle: (circleData) =>
+    circleServiceClient.post('/circles', circleData),
+  
+  getSummariesByCircle: (circleId, page = 0, size = 20) =>
+    summaryServiceClient.get(`/summaries/circle/${circleId}?page=${page}&size=${size}`)
 };

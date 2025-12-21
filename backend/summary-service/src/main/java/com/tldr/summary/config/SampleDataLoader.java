@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class SampleDataLoader implements CommandLineRunner {
         aiBreakthrough.setOriginalUrl("https://example.com/articles/ai-hybrid-experts");
         aiBreakthrough.setUserId(1L);
         aiBreakthrough.setTags(Set.of("technology", "ai", "research"));
+        aiBreakthrough.setCircleIds(Set.of(1L)); // Global circle
         aiBreakthrough.setCreatedAt(LocalDateTime.now().minusHours(3));
         aiBreakthrough.setVoteCount(42);
         aiBreakthrough.setCommentCount(12);
@@ -42,6 +44,7 @@ public class SampleDataLoader implements CommandLineRunner {
         climateDigest.setOriginalUrl("https://example.com/articles/renewable-adoption-2025");
         climateDigest.setUserId(2L);
         climateDigest.setTags(Set.of("climate", "energy", "policy"));
+        climateDigest.setCircleIds(Set.of(1L)); // Global circle
         climateDigest.setCreatedAt(LocalDateTime.now().minusHours(6));
         climateDigest.setVoteCount(28);
         climateDigest.setCommentCount(8);
@@ -54,6 +57,7 @@ public class SampleDataLoader implements CommandLineRunner {
         spaceUpdate.setOriginalUrl("https://example.com/articles/lunar-lander-milestone");
         spaceUpdate.setUserId(3L);
         spaceUpdate.setTags(Set.of("space", "science", "innovation"));
+        spaceUpdate.setCircleIds(Set.of(1L)); // Global circle
         spaceUpdate.setCreatedAt(LocalDateTime.now().minusDays(1));
         spaceUpdate.setVoteCount(35);
         spaceUpdate.setCommentCount(5);
@@ -66,6 +70,7 @@ public class SampleDataLoader implements CommandLineRunner {
         healthBreakthrough.setOriginalUrl("https://example.com/articles/microbiome-therapy");
         healthBreakthrough.setUserId(4L);
         healthBreakthrough.setTags(Set.of("health", "science", "biotech"));
+        healthBreakthrough.setCircleIds(Set.of(1L)); // Global circle
         healthBreakthrough.setCreatedAt(LocalDateTime.now().minusHours(16));
         healthBreakthrough.setVoteCount(31);
         healthBreakthrough.setCommentCount(9);
@@ -78,6 +83,7 @@ public class SampleDataLoader implements CommandLineRunner {
         marketWatch.setOriginalUrl("https://example.com/articles/cleantech-funding-q3");
         marketWatch.setUserId(5L);
         marketWatch.setTags(Set.of("business", "sustainability", "startups"));
+        marketWatch.setCircleIds(Set.of(1L)); // Global circle
         marketWatch.setCreatedAt(LocalDateTime.now().minusHours(10));
         marketWatch.setVoteCount(19);
         marketWatch.setCommentCount(4);
@@ -91,6 +97,7 @@ public class SampleDataLoader implements CommandLineRunner {
         aiFramework.setOriginalUrl("https://example.com/articles/ai-framework-opensource");
         aiFramework.setUserId(6L);
         aiFramework.setTags(Set.of("technology", "ai", "programming", "open-source"));
+        aiFramework.setCircleIds(Set.of(1L)); // Global circle
         aiFramework.setCreatedAt(LocalDateTime.now().minusHours(2));
         aiFramework.setVoteCount(156);
         aiFramework.setCommentCount(34);
@@ -103,6 +110,7 @@ public class SampleDataLoader implements CommandLineRunner {
         quantumComputing.setOriginalUrl("https://example.com/articles/quantum-error-correction");
         quantumComputing.setUserId(6L);
         quantumComputing.setTags(Set.of("technology", "science", "quantum", "research"));
+        quantumComputing.setCircleIds(Set.of(1L)); // Global circle
         quantumComputing.setCreatedAt(LocalDateTime.now().minusHours(5));
         quantumComputing.setVoteCount(142);
         quantumComputing.setCommentCount(28);
@@ -115,6 +123,7 @@ public class SampleDataLoader implements CommandLineRunner {
         blockchainUpdate.setOriginalUrl("https://example.com/articles/blockchain-energy-efficient");
         blockchainUpdate.setUserId(6L);
         blockchainUpdate.setTags(Set.of("technology", "blockchain", "sustainability", "innovation"));
+        blockchainUpdate.setCircleIds(Set.of(1L)); // Global circle
         blockchainUpdate.setCreatedAt(LocalDateTime.now().minusHours(8));
         blockchainUpdate.setVoteCount(128);
         blockchainUpdate.setCommentCount(22);
@@ -127,6 +136,7 @@ public class SampleDataLoader implements CommandLineRunner {
         cybersecurity.setOriginalUrl("https://example.com/articles/ai-cybersecurity-zeroday");
         cybersecurity.setUserId(6L);
         cybersecurity.setTags(Set.of("technology", "security", "ai", "cybersecurity"));
+        cybersecurity.setCircleIds(Set.of(1L)); // Global circle
         cybersecurity.setCreatedAt(LocalDateTime.now().minusDays(1));
         cybersecurity.setVoteCount(134);
         cybersecurity.setCommentCount(31);
@@ -139,6 +149,7 @@ public class SampleDataLoader implements CommandLineRunner {
         robotics.setOriginalUrl("https://example.com/articles/humanoid-robots-warehouse");
         robotics.setUserId(6L);
         robotics.setTags(Set.of("technology", "robotics", "automation", "innovation"));
+        robotics.setCircleIds(Set.of(1L)); // Global circle
         robotics.setCreatedAt(LocalDateTime.now().minusDays(2));
         robotics.setVoteCount(119);
         robotics.setCommentCount(19);
@@ -152,6 +163,7 @@ public class SampleDataLoader implements CommandLineRunner {
         aiEthics.setOriginalUrl("https://example.com/articles/ai-ethics-framework");
         aiEthics.setUserId(1L);
         aiEthics.setTags(Set.of("technology", "ai", "ethics", "policy"));
+        aiEthics.setCircleIds(Set.of(1L)); // Global circle
         aiEthics.setCreatedAt(LocalDateTime.now().minusHours(4));
         aiEthics.setVoteCount(87);
         aiEthics.setCommentCount(15);
@@ -164,6 +176,7 @@ public class SampleDataLoader implements CommandLineRunner {
         climateTech.setOriginalUrl("https://example.com/articles/dac-cost-parity");
         climateTech.setUserId(2L);
         climateTech.setTags(Set.of("climate", "technology", "sustainability", "innovation"));
+        climateTech.setCircleIds(Set.of(1L)); // Global circle
         climateTech.setCreatedAt(LocalDateTime.now().minusHours(7));
         climateTech.setVoteCount(73);
         climateTech.setCommentCount(12);
@@ -176,6 +189,7 @@ public class SampleDataLoader implements CommandLineRunner {
         biotech.setOriginalUrl("https://example.com/articles/gene-therapy-crispr");
         biotech.setUserId(4L);
         biotech.setTags(Set.of("health", "science", "biotech", "genetics"));
+        biotech.setCircleIds(Set.of(1L)); // Global circle
         biotech.setCreatedAt(LocalDateTime.now().minusHours(12));
         biotech.setVoteCount(65);
         biotech.setCommentCount(11);
@@ -188,6 +202,7 @@ public class SampleDataLoader implements CommandLineRunner {
         spaceTech.setOriginalUrl("https://example.com/articles/mars-sample-return");
         spaceTech.setUserId(3L);
         spaceTech.setTags(Set.of("space", "science", "mars", "exploration"));
+        spaceTech.setCircleIds(Set.of(1L)); // Global circle
         spaceTech.setCreatedAt(LocalDateTime.now().minusDays(1).minusHours(5));
         spaceTech.setVoteCount(91);
         spaceTech.setCommentCount(18);
@@ -200,6 +215,7 @@ public class SampleDataLoader implements CommandLineRunner {
         fintech.setOriginalUrl("https://example.com/articles/cbdc-pilot-expansion");
         fintech.setUserId(5L);
         fintech.setTags(Set.of("business", "finance", "technology", "policy"));
+        fintech.setCircleIds(Set.of(1L)); // Global circle
         fintech.setCreatedAt(LocalDateTime.now().minusHours(15));
         fintech.setVoteCount(58);
         fintech.setCommentCount(9);
@@ -212,6 +228,7 @@ public class SampleDataLoader implements CommandLineRunner {
         aiEducation.setOriginalUrl("https://example.com/articles/ai-education-tutoring");
         aiEducation.setUserId(6L);
         aiEducation.setTags(Set.of("technology", "ai", "education", "innovation"));
+        aiEducation.setCircleIds(Set.of(1L)); // Global circle
         aiEducation.setCreatedAt(LocalDateTime.now().minusDays(3));
         aiEducation.setVoteCount(167);
         aiEducation.setCommentCount(42);
@@ -224,6 +241,7 @@ public class SampleDataLoader implements CommandLineRunner {
         autonomousVehicles.setOriginalUrl("https://example.com/articles/autonomous-vehicles-approved");
         autonomousVehicles.setUserId(6L);
         autonomousVehicles.setTags(Set.of("technology", "automation", "transportation", "innovation"));
+        autonomousVehicles.setCircleIds(Set.of(1L)); // Global circle
         autonomousVehicles.setCreatedAt(LocalDateTime.now().minusDays(4));
         autonomousVehicles.setVoteCount(153);
         autonomousVehicles.setCommentCount(37);
