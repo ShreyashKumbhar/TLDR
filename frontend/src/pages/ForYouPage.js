@@ -67,9 +67,6 @@ function ForYouPage() {
 
   return (
     <div className="feed wide-feed">
-      <div className="feed-background">
-        <div className="background-pattern"></div>
-      </div>
       <div className="feed-header">
         <h2>For You</h2>
       </div>

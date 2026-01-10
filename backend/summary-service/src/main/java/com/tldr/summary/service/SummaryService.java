@@ -110,6 +110,12 @@ public class SummaryService {
                 .map(this::convertToDTO);
     }
     
+    public Page<SummaryDTO> searchSummaries(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return summaryRepository.searchSummaries(query, pageable)
+                .map(this::convertToDTO);
+    }
+    
     public List<SummaryDTO> getTrendingDigest() {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         Pageable pageable = PageRequest.of(0, 10);

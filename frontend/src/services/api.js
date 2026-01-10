@@ -52,6 +52,9 @@ export const summaryService = {
   getSummariesByUserId: (userId, page = 0, size = 20) =>
     summaryServiceClient.get(`/summaries/user/${userId}?page=${page}&size=${size}`),
 
+  searchSummaries: (query, page = 0, size = 20) =>
+    summaryServiceClient.get(`/summaries/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`),
+
   deleteSummary: (id, userId) =>
     summaryServiceClient.delete(`/summaries/${id}?userId=${userId}`)
 };
