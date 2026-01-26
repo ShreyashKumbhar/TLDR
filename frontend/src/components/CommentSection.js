@@ -146,7 +146,7 @@ function CommentSection({ summaryId, onCommentCountChange }) {
     setComments((prev) => update(prev));
   };
 
-  const renderComment = (comment, depth = 0) => (
+  const renderComment = (comment, depth = 0, commentNumber = 0) => (
     <CommentItem
       key={comment.id}
       comment={comment}
@@ -158,6 +158,7 @@ function CommentSection({ summaryId, onCommentCountChange }) {
       onDelete={handleDelete}
       onReport={handleReport}
       onModeration={handleModeration}
+      commentNumber={commentNumber}
     />
   );
 
@@ -189,12 +190,12 @@ function CommentSection({ summaryId, onCommentCountChange }) {
           <p>No comments yet. Be the first to share your perspective!</p>
         </div>
       )}
-      {!loading && !error && comments.length > 0 && comments.map((comment) => renderComment(comment, 0))}
+      {!loading && !error && comments.length > 0 && comments.map((comment, index) => renderComment(comment, 0, index))}
     </div>
   );
 }
 
-function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDelete, onReport, onModeration }) {
+function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDelete, onReport, onModeration, commentNumber }) {
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState('');
 
@@ -215,6 +216,7 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
       {depth > 0 && <div className="comment-connector"></div>}
       <div className="comment-content">
         <div className="comment-header">
+          <span className="comment-number">#{commentNumber}</span>
           <strong className="comment-author">{comment.username || 'User'}</strong>
           <span className="comment-timestamp">{formatDate(comment.createdAt)}</span>
         </div>
@@ -274,7 +276,7 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
 
         {comment.replies && comment.replies.length > 0 && (
           <div className="comment-replies">
-            {comment.replies.map((reply) => (
+            {comment.replies.map((reply, replyIndex) => (
               <CommentItem
                 key={reply.id}
                 comment={reply}
@@ -286,6 +288,7 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
                 onDelete={onDelete}
                 onReport={onReport}
                 onModeration={onModeration}
+                commentNumber={`${commentNumber}.${replyIndex}`}
               />
             ))}
           </div>
