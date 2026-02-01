@@ -93,15 +93,6 @@ body {
   width: 100%;
 }
 
-.top-bar-left {
-  /* Empty left section for balance */
-  min-width: 0;
-}
-
-.logo-link {
-  justify-self: center;
-}
-
 .logo-link {
   display: flex;
   align-items: center;
@@ -2644,4 +2635,122 @@ h1, h2, h3, h4, h5, h6 {
   .post-content {
     margin-bottom: 12px;
   }
+}
+
+/* =====================
+   COMMENT STYLES
+   ===================== */
+.comment-section {
+  margin-top: 24px;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.comment-number {
+  font-weight: 600;
+  color: var(--amber);
+  font-size: 13px;
+  min-width: 30px;
+}
+
+.comment-author {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.comment-timestamp {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.comment-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.comment-depth-1 {
+  margin-left: 24px;
+  border-left: 3px solid var(--amber);
+}
+
+.comment-depth-2 {
+  margin-left: 48px;
+  border-left: 3px solid var(--teal);
+}
+
+.comment-connector {
+  width: 2px;
+  height: 16px;
+  background: var(--border-subtle);
+  margin-left: 8px;
+}
+
+.comment-body {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.link-button:hover {
+  color: var(--amber);
+  background: rgba(224, 163, 63, 0.1);
+}
+
+.link-button.active {
+  color: var(--amber);
+  background: rgba(224, 163, 63, 0.2);
+}
+
+.comment-reply-form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comment-reply-form textarea {
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.comment-replies {
+  margin-top: 12px;
+}
+
+.comment-hidden {
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
