@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost';
+const getApiBaseUrl = () => {
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+  // Use current window location (works for same-origin or when services are proxied)
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  return `${protocol}//${hostname}`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const summaryServiceClient = axios.create({
   baseURL: `${API_BASE_URL}:8082/api`

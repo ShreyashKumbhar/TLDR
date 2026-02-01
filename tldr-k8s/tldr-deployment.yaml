@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tldr-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tldr
+  template:
+    metadata:
+      labels:
+        app: tldr
+    spec:
+      containers:
+        - name: tldr
+          image: shreyashkumbhar/tldr-app-final:1.0.0
+          ports:
+            - containerPort: 3000
+            - containerPort: 8088
+            - containerPort: 8081
+            - containerPort: 8082
+            - containerPort: 8083
+            - containerPort: 8084
+            - containerPort: 8085
+            - containerPort: 8086
+            - containerPort: 8087

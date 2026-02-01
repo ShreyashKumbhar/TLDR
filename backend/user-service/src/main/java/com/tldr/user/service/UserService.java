@@ -25,7 +25,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
 
-    @Value("${services.comment.base-url:http://comment-service:8084}")
+    @Value("${services.comment.base-url:http://localhost:8084}")
     private String commentServiceBaseUrl;
 
     public UserDTO createUser(User user) {

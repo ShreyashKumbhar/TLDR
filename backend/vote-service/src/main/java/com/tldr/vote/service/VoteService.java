@@ -19,10 +19,10 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${services.summary.base-url:http://summary-service:8082}")
+    @Value("${services.summary.base-url:http://localhost:8082}")
     private String summaryServiceBaseUrl;
 
-    @Value("${services.user.base-url:http://user-service:8081}")
+    @Value("${services.user.base-url:http://localhost:8081}")
     private String userServiceBaseUrl;
 
     @Transactional

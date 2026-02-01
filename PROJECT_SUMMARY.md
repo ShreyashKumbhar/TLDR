@@ -199,7 +199,6 @@ TLDR/
 - [x] React 18 frontend
 - [x] H2 in-memory databases
 - [x] JPA/Hibernate ORM
-- [x] Docker support
 - [x] CORS configuration
 - [x] Pagination
 - [x] Data validation
@@ -214,7 +213,6 @@ TLDR/
 - [x] Architecture documentation
 - [x] Contributing guidelines
 - [x] Sample data script
-- [x] Docker Compose orchestration
 - [x] .gitignore configuration
 
 ## Technologies Used
@@ -235,8 +233,6 @@ TLDR/
 - **Styling:** Custom CSS
 
 ### DevOps
-- **Containerization:** Docker
-- **Orchestration:** Docker Compose
 - **Version Control:** Git
 
 ## Data Models
@@ -354,13 +350,7 @@ TLDR/
 
 ## How to Run
 
-### Option 1: Docker (Recommended)
-```bash
-docker-compose up --build
-```
-Access at http://localhost:3000
-
-### Option 2: Manual
+### Manual Setup
 ```bash
 # Start each backend service
 cd backend/[service-name]
@@ -431,7 +421,6 @@ curl http://localhost:8082/api/summaries/trending
 ✅ **6 microservices** fully implemented
 ✅ **50+ REST endpoints** across all services
 ✅ **11 React pages** with authentication flows
-✅ **100% Docker support** for deployment
 ✅ **Complete documentation** suite (7 files)
 ✅ **Sample data script** for testing
 ✅ **Production-ready structure** with clean separation
@@ -445,7 +434,6 @@ TLDR is a complete, production-ready skeleton for a microservices-based news agg
 - Microservices architecture
 - RESTful API design
 - Frontend-backend integration
-- Containerization
 - Documentation
 - Developer experience
 
