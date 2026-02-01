@@ -208,7 +208,21 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
     setReplying(false);
   };
 
-  const formatDate = (ts) => new Date(ts).toLocaleString();
+  const formatAbsoluteTime = (ts) => {
+    const date = new Date(ts);
+    const time = date.getTime();
+    if (Number.isNaN(time)) return '';
+
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const mm = pad2(date.getMonth() + 1);
+    const dd = pad2(date.getDate());
+    const hh = pad2(date.getHours());
+    const min = pad2(date.getMinutes());
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
+
+  const timestampText = formatAbsoluteTime(comment.createdAt);
 
   return (
     <div className={`comment-item comment-depth-${depth}`}>
@@ -216,7 +230,9 @@ function CommentItem({ comment, depth, user, isModerator, onReply, onLike, onDel
       <div className="comment-content">
         <div className="comment-header">
           <strong className="comment-author">{comment.username || 'User'}</strong>
-          <span className="comment-timestamp">{formatDate(comment.createdAt)}</span>
+          {timestampText && (
+            <span className="comment-timestamp">{timestampText}</span>
+          )}
         </div>
         {comment.hidden ? (
           <div className="comment-hidden">This comment has been hidden by a moderator.</div>

@@ -102,9 +102,6 @@ function CirclesPage() {
   if (viewingCircle && circle) {
     return (
       <div className="feed">
-        <div className="feed-background">
-          <div className="background-pattern"></div>
-        </div>
         <div className="feed-header">
           <h2>{circle.name}</h2>
         </div>
@@ -148,9 +145,6 @@ function CirclesPage() {
   // Browsing all circles
   return (
     <div className="feed">
-      <div className="feed-background">
-        <div className="background-pattern"></div>
-      </div>
       <div className="feed-header">
         <h2>Browse Circles</h2>
       </div>

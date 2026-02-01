@@ -26,9 +26,6 @@ function TrendingPage() {
 
   return (
     <div className="feed wide-feed">
-      <div className="feed-background">
-        <div className="background-pattern"></div>
-      </div>
       <div className="feed-header">
         <h2>🔥 Trending</h2>
       </div>

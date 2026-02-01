@@ -8,30 +8,8 @@ Make sure you have the following installed:
 - **Java 17+** - [Download](https://adoptium.net/)
 - **Maven 3.6+** - [Download](https://maven.apache.org/download.cgi)
 - **Node.js 16+** - [Download](https://nodejs.org/)
-- **Docker & Docker Compose** (optional) - [Download](https://www.docker.com/get-started)
 
-## Option 1: Docker (Recommended)
-
-The fastest way to get started is using Docker:
-
-```bash
-# Clone the repository
-git clone https://github.com/ShreyashKumbhar/TLDR.git
-cd TLDR
-
-# Start all services
-docker-compose up --build
-
-# Access the application
-# Frontend: http://localhost:3000
-# Backend services: http://localhost:8081-8085
-```
-
-That's it! All microservices and the frontend will start automatically.
-
-## Option 2: Manual Setup
-
-If you prefer to run services individually:
+## Manual Setup
 
 ### Step 1: Start Backend Services
 
@@ -218,12 +196,6 @@ npm start
 
 ## Stopping Services
 
-### Docker:
-```bash
-docker-compose down
-```
-
-### Manual:
 Press `Ctrl+C` in each terminal window running a service.
 
 Happy coding! 🚀

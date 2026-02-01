@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useUI } from '../context/UIContext';
-import { summaryService } from '../services/api';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { summaryService, circleService } from '../services/api';
 import SummaryCard from '../components/SummaryCard';
 
 function HomePage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const PAGE_SIZE = 5;
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState('recent');
+  const [searchQuery, setSearchQuery] = useState('');
   const [pageMeta, setPageMeta] = useState({
     first: true,
     last: false,
     totalPages: 1,
     totalElements: 0
   });
-  const [topStories, setTopStories] = useState([]);
-  const [followedUsers, setFollowedUsers] = useState([]);
+  const [followedCircles, setFollowedCircles] = useState([]);
+  const [loadingCircles, setLoadingCircles] = useState(false);
 
   useEffect(() => {
     loadSummaries();
-    loadTopStories();
-    loadFollowedUsers();
-  }, [sortBy, page]);
+    if (user) {
+      loadFollowedCircles();
+    }
+  }, [sortBy, page, user]);
 
   const handleSortChange = (value) => {
     if (sortBy === value) return;
     setSortBy(value);
     setPage(0);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   const loadSummaries = async () => {
@@ -59,22 +71,18 @@ function HomePage() {
     }
   };
 
-  const loadTopStories = async () => {
+  const loadFollowedCircles = async () => {
+    if (!user) return;
     try {
-      const response = await summaryService.getTopSummaries(0, 5);
-      setTopStories(response.data.content || []);
+      setLoadingCircles(true);
+      const response = await circleService.getFollowedCircles(user.id);
+      setFollowedCircles(response.data || []);
     } catch (error) {
-      console.error('Error loading top stories:', error);
+      console.error('Error loading followed circles:', error);
+      setFollowedCircles([]);
+    } finally {
+      setLoadingCircles(false);
     }
-  };
-
-  const loadFollowedUsers = async () => {
-    // Mock data for followed users - replace with actual API call when backend supports following
-    setFollowedUsers([
-      { id: 1, username: 'techguru', lastActive: '2h ago', activity: 'Posted a summary' },
-      { id: 2, username: 'sciencefan', lastActive: '1d ago', activity: 'Commented on AI article' },
-      { id: 3, username: 'newsreader', lastActive: '3h ago', activity: 'Upvoted 5 summaries' }
-    ]);
   };
 
   return (
@@ -82,7 +90,18 @@ function HomePage() {
       {/* Main Feed */}
       <div className="main-feed">
         <div className="feed-header">
-          <h2>Home</h2>
+          <div className="feed-header-left">
+            <h2>Home</h2>
+            <form onSubmit={handleSearch} className="home-search-form">
+              <input
+                type="text"
+                placeholder="Search summaries..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="home-search-input"
+              />
+            </form>
+          </div>
           <div className="sort-buttons">
             <button 
               className={`sort-button ${sortBy === 'recent' ? 'active' : ''}`}
@@ -133,41 +152,31 @@ function HomePage() {
       )}
       </div>
 
-      {/* Right Sidebar - Following and Top Stories */}
+      {/* Right Sidebar - Following Circles */}
       <div className="right-sidebar">
         <div className="sidebar-section">
           <h3>Following</h3>
-          {followedUsers.length === 0 ? (
-            <p className="sidebar-empty">No users followed yet</p>
+          {loadingCircles ? (
+            <p className="sidebar-empty">Loading circles...</p>
+          ) : followedCircles.length === 0 ? (
+            <p className="sidebar-empty">No circles followed yet</p>
           ) : (
-            followedUsers.map(user => (
-              <div key={user.id} className="followed-user">
-                <div className="user-avatar-small">
-                  {user.username.charAt(0).toUpperCase()}
+            followedCircles.map(circle => (
+              <Link 
+                key={circle.id} 
+                to={`/circles/${circle.id}`}
+                className="followed-circle"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div className="circle-info-compact">
+                  <span className="circle-name-small">{circle.name}</span>
+                  {circle.postCount !== undefined && (
+                    <span className="circle-meta-small">
+                      {circle.postCount} {circle.postCount === 1 ? 'post' : 'posts'}
+                    </span>
+                  )}
                 </div>
-                <div className="user-info-compact">
-                  <span className="username-small">{user.username}</span>
-                  <span className="activity-small">{user.activity}</span>
-                  <span className="last-active">{user.lastActive}</span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="sidebar-section">
-          <h3>Top Stories</h3>
-          {topStories.length === 0 ? (
-            <p className="sidebar-empty">No top stories yet</p>
-          ) : (
-            topStories.map(story => (
-              <div key={story.id} className="top-story">
-                <h4 className="story-title">{story.title}</h4>
-                <div className="story-meta">
-                  <span className="story-author">{story.username || `User ${story.userId}`}</span>
-                  <span className="story-votes">▲ {story.voteCount || 0}</span>
-                </div>
-              </div>
+              </Link>
             ))
           )}
         </div>

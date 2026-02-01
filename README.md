@@ -24,7 +24,6 @@ TLDR is a microservices-based web application similar to Reddit, but specificall
 - Modern React frontend
 - RESTful APIs for inter-service communication
 - H2 in-memory databases (easily replaceable with PostgreSQL/MySQL)
-- Docker support for easy deployment
 - JWT-based authentication with BCrypt password hashing and input validation
 
 ## Architecture
@@ -91,7 +90,6 @@ TLDR/
 │       ├── components/
 │       ├── pages/
 │       └── services/
-├── docker-compose.yml
 └── README.md
 ```
 
@@ -110,7 +108,6 @@ TLDR/
 - Java 17 or higher
 - Maven 3.6+
 - Node.js 16+ and npm
-- Docker and Docker Compose (optional, for containerized deployment)
 
 ### Running Locally
 
@@ -176,16 +173,6 @@ To populate the application with sample data for testing:
 ```
 
 This will create sample users, summaries, votes, and comments to help you explore the application.
-
-### Running with Docker
-
-The easiest way to run the entire application:
-
-```bash
-docker-compose up --build
-```
-
-This will start all services and the frontend. Access the application at http://localhost:3000
 
 ## API Documentation
 
@@ -277,10 +264,6 @@ This will start all services and the frontend. Access the application at http://
 - **Routing:** React Router v6
 - **HTTP Client:** Axios
 - **Styling:** CSS3 (custom styling)
-
-### DevOps
-- **Containerization:** Docker
-- **Orchestration:** Docker Compose
 
 ## Development
 

@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { voteService, recommendationService, savedService } from '../services/api';
+import { voteService, recommendationService, savedService, commentService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
 
 function SummaryCard({ summary, onSummaryUpdate, onSavedChange }) {
   const [voteCount, setVoteCount] = useState(summary.voteCount || 0);
   const [userVote, setUserVote] = useState(0);
-  const [commentCount, setCommentCount] = useState(summary.commentCount || 0);
+  const [commentCount, setCommentCount] = useState(summary.commentCount ?? 0);
   const [showComments, setShowComments] = useState(false);
   const [loadingVote, setLoadingVote] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { user } = useAuth();
   const currentUserId = user?.id;
+
+  useEffect(() => {
+    if (!summary?.id) return;
+
+    commentService.getCommentCount(summary.id)
+      .then((response) => {
+        const count = typeof response.data === 'number' ? response.data : 0;
+        setCommentCount(count);
+      })
+      .catch((err) => {
+        console.error('Error fetching comment count:', err);
+      });
+  }, [summary?.id]);
 
   // Fetch user's existing vote and saved status when component mounts
   useEffect(() => {
@@ -213,7 +226,10 @@ function SummaryCard({ summary, onSummaryUpdate, onSavedChange }) {
           className="action-button comment-button"
           onClick={() => setShowComments((prev) => !prev)}
         >
-          💬 {commentCount}
+          <span className="comment-count-badge">
+            {commentCount}
+          </span>
+          💬
         </button>
         <button className="action-button share-button" onClick={handleShare}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -233,14 +249,16 @@ function SummaryCard({ summary, onSummaryUpdate, onSavedChange }) {
         <div className="post-comments">
           <CommentSection
             summaryId={summary.id}
-            onCommentCountChange={(change) => {
-              setCommentCount((prev) => prev + change);
-              if (currentUserId && change > 0) {
-                recommendationService.trackBehavior(currentUserId, summary.id, 'COMMENT')
-                  .catch(err => console.error('Error tracking comment:', err));
-              }
+            onCommentCountChange={(totalCount) => {
+              setCommentCount((prev) => {
+                if (currentUserId && totalCount > prev) {
+                  recommendationService.trackBehavior(currentUserId, summary.id, 'COMMENT')
+                    .catch(err => console.error('Error tracking comment:', err));
+                }
+                return totalCount;
+              });
               if (onSummaryUpdate) {
-                onSummaryUpdate({ ...summary, commentCount: commentCount + change });
+                onSummaryUpdate({ ...summary, commentCount: totalCount });
               }
             }}
           />

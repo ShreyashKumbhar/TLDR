@@ -63,9 +63,6 @@ function SubmitPage() {
   if (!user) {
     return (
       <div className="feed">
-        <div className="feed-background">
-          <div className="background-pattern"></div>
-        </div>
         <div className="feed-header">
           <h2>Submit Summary</h2>
         </div>
@@ -87,9 +84,6 @@ function SubmitPage() {
 
   return (
     <div className="feed">
-      <div className="feed-background">
-        <div className="background-pattern"></div>
-      </div>
       <div className="feed-header">
         <h2>Submit Summary</h2>
       </div>
