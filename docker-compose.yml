@@ -1,73 +1,75 @@
+version: "3.8"
+
 services:
   user-service:
     build:
       context: ./backend/user-service
-    ports:
-      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   summary-service:
     build:
       context: ./backend/summary-service
-    ports:
-      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   vote-service:
     build:
       context: ./backend/vote-service
-    ports:
-      - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   comment-service:
     build:
       context: ./backend/comment-service
-    ports:
-      - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   saved-service:
     build:
       context: ./backend/saved-service
-    ports:
-      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   recommendation-service:
     build:
       context: ./backend/recommendation-service
-    ports:
-      - "8086:8086"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   circle-service:
     build:
       context: ./backend/circle-service
-    ports:
-      - "8087:8087"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms128m -Xmx256m
     networks:
       - tldr-network
+    restart: always
 
   frontend:
     build:
@@ -84,6 +86,7 @@ services:
       - circle-service
     networks:
       - tldr-network
+    restart: always
 
 networks:
   tldr-network:
