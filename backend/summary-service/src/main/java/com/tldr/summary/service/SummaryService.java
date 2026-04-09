@@ -28,10 +28,10 @@ public class SummaryService {
     private final SummaryRepository summaryRepository;
     private final RestTemplate restTemplate;
     
-    @Value("${services.user.base-url:http://localhost:8081}")
+    @Value("${services.user.base-url:http://user-service:8081}")
     private String userServiceBaseUrl;
     
-    @Value("${services.circle.base-url:http://localhost:8087}")
+    @Value("${services.circle.base-url:http://circle-service:8087}")
     private String circleServiceBaseUrl;
     
     private final Map<Long, UserInfo> userCache = new ConcurrentHashMap<>();

@@ -37,10 +37,10 @@ public class CommentService {
     private final CommentReportRepository commentReportRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${services.user.base-url:http://localhost:8081}")
+    @Value("${services.user.base-url:http://user-service:8081}")
     private String userServiceBaseUrl;
 
-    @Value("${services.summary.base-url:http://localhost:8082}")
+    @Value("${services.summary.base-url:http://summary-service:8082}")
     private String summaryServiceBaseUrl;
 
     private final Map<Long, UserProfile> userCache = new ConcurrentHashMap<>();

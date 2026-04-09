@@ -31,22 +31,22 @@ public class RecommendationService {
     private final RecommendationFeedbackRepository feedbackRepository;
     private final RestTemplate restTemplate;
     
-    @Value("${services.summary.base-url:http://localhost:8082}")
+    @Value("${services.summary.base-url:http://summary-service:8082}")
     private String summaryServiceBaseUrl;
     
-    @Value("${services.user.base-url:http://localhost:8081}")
+    @Value("${services.user.base-url:http://user-service:8081}")
     private String userServiceBaseUrl;
     
-    @Value("${services.vote.base-url:http://localhost:8083}")
+    @Value("${services.vote.base-url:http://vote-service:8083}")
     private String voteServiceBaseUrl;
     
-    @Value("${services.comment.base-url:http://localhost:8084}")
+    @Value("${services.comment.base-url:http://comment-service:8084}")
     private String commentServiceBaseUrl;
     
-    @Value("${services.saved.base-url:http://localhost:8085}")
+    @Value("${services.saved.base-url:http://saved-service:8085}")
     private String savedServiceBaseUrl;
     
-    @Value("${services.circle.base-url:http://localhost:8087}")
+    @Value("${services.circle.base-url:http://circle-service:8087}")
     private String circleServiceBaseUrl;
     
     @Value("${recommendation.content-weight:0.6}")
