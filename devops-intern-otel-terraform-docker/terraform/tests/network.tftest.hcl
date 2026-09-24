@@ -55,3 +55,8 @@ run "reject_mutable_image" {
   variables { container_image = "example.invalid/api:latest" }
   expect_failures = [var.container_image]
 }
+run "reject_collector_port_collision" {
+  command = plan
+  variables { app_port = 4318 }
+  expect_failures = [var.app_port]
+}

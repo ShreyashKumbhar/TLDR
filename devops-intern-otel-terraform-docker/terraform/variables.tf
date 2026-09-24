@@ -30,8 +30,8 @@ variable "app_port" {
   type    = number
   default = 3000
   validation {
-    condition     = var.app_port >= 1024 && var.app_port <= 65535 && floor(var.app_port) == var.app_port
-    error_message = "The non-root app port must be an integer between 1024 and 65535."
+    condition     = var.app_port >= 1024 && var.app_port <= 65535 && floor(var.app_port) == var.app_port && var.app_port != 4318
+    error_message = "Use an integer port between 1024 and 65535, excluding the collector's port 4318."
   }
 }
 variable "container_image" {

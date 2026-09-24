@@ -10,3 +10,5 @@ plan.txt
 !*.tfvars.example
 .env
 evidence/
+deployment-outputs.json
+terraform/backend.tf

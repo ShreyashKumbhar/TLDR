@@ -16,8 +16,11 @@ assert.equal(app.ip_protocol, 'tcp');
 assert.ok(!app.cidr_ipv4 && !app.cidr_ipv6);
 assert.ok(refs('aws_vpc_security_group_ingress_rule.app_from_alb', 'referenced_security_group_id').includes('aws_security_group.alb.id'));
 assert.equal(resources.filter(r => r.type === 'aws_vpc_security_group_ingress_rule').length, 2);
+assert.equal(resources.filter(r => r.type === 'aws_security_group_rule').length, 0);
 assert.equal(resources.filter(r => r.type === 'aws_security_group').length, 2);
-for (const group of resources.filter(r => r.type === 'aws_security_group')) assert.equal(group.values.ingress?.length ?? 0, 0);
+// Refreshed SG values contain separately managed rules too. Reject inline rules
+// in configuration, not those computed values, so later deployment plans work.
+for (const group of resources.filter(r => r.type === 'aws_security_group')) assert.ok(!config(group.address).expressions.ingress);
 const clients = get('aws_vpc_security_group_ingress_rule.clients');
 assert.equal(clients.cidr_ipv4, plan.variables.allowed_client_cidr.value);
 assert.notEqual(clients.cidr_ipv4, '0.0.0.0/0');

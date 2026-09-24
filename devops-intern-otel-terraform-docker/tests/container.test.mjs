@@ -11,7 +11,7 @@ async function eventually(check) {
   throw error;
 }
 const counter = text => Number(text.match(/http_requests_total\{method="GET",route="\/health",status_code="200"\} (\d+)/)?.[1] ?? 0);
-test('running container exports metrics, traces, logs and Sentry errors', { timeout: 90000 }, async () => {
+test('running service exports metrics, traces, logs and Sentry errors', { timeout: 90000 }, async () => {
   await eventually(async () => assert.equal((await fetch(`${base}/health`)).status, 200));
   const before = counter(await (await fetch(`${base}/metrics`)).text());
   const traceId = '12345678901234567890123456789012';

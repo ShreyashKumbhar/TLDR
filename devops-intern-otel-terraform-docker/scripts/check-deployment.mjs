@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const outputs = JSON.parse(fs.readFileSync(process.argv[2] ?? 'deployment-outputs.json', 'utf8').replace(/^\uFEFF/, ''));
+const url = new URL(outputs.app_url.value);
+assert.equal(url.pathname, '/health');
+const health = await fetch(url, { signal: AbortSignal.timeout(15000) });
+assert.equal(health.status, 200, 'Health must be reachable from the allowlisted client');
+assert.deepEqual(await health.json(), { status: 'ok' });
+assert.match(health.headers.get('x-trace-id') ?? '', /^[a-f0-9]{32}$/);
+url.pathname = '/metrics';
+const metrics = await fetch(url, { signal: AbortSignal.timeout(15000) });
+assert.equal(metrics.status, 404, 'Metrics must not be forwarded by the public ALB');
+assert.equal(metrics.headers.get('x-trace-id'), null, 'ALB must reject metrics before it reaches the API');
+console.log('Deployed health and ALB route restrictions passed.');

@@ -1,0 +1,93 @@
+name: DevOps intern CI
+on:
+  push:
+    paths: ['devops-intern-otel-terraform-docker/**', '.github/workflows/devops-intern-*.yml']
+  pull_request:
+    paths: ['devops-intern-otel-terraform-docker/**', '.github/workflows/devops-intern-*.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: devops-intern-otel-terraform-docker
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: devops-intern-otel-terraform-docker/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-coverage
+          path: devops-intern-otel-terraform-docker/coverage
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image and run default Compose stack
+        run: |
+          docker compose up --build -d --wait
+          curl --fail --retry 10 --retry-connrefused http://localhost:3000/health
+          test "$(docker compose exec -T api id -u)" = 1000
+          docker compose down --volumes
+      - name: Run network integration tests with collector and Prometheus
+        run: |
+          docker compose -f compose.yaml -f compose.test.yaml up -d --build --wait api prometheus
+          docker compose -f compose.yaml -f compose.test.yaml run --rm integration
+      - name: Collect evidence
+        if: always()
+        run: |
+          mkdir -p evidence
+          docker compose -f compose.yaml -f compose.test.yaml logs --no-color > evidence/containers.log
+          docker compose -f compose.yaml -f compose.test.yaml exec -T evidence node -e "fetch('http://localhost:4318/evidence').then(r=>r.text()).then(console.log)" > evidence/telemetry.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: container-evidence
+          path: devops-intern-otel-terraform-docker/evidence
+      - name: Tear down
+        if: always()
+        run: docker compose -f compose.yaml -f compose.test.yaml down --volumes --remove-orphans
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_ACCESS_KEY_ID: offline-ci
+      AWS_SECRET_ACCESS_KEY: offline-ci
+      AWS_EC2_METADATA_DISABLED: 'true'
+      TF_VAR_offline_plan: 'true'
+      TF_VAR_allowed_client_cidr: '203.0.113.10/32'
+      TF_VAR_container_image: 'example.invalid/api@sha256:0000000000000000000000000000000000000000000000000000000000000000'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - uses: hashicorp/setup-terraform@v3
+        with: { terraform_version: '1.16.2' }
+      - run: terraform -chdir=terraform fmt -check -recursive
+      - run: terraform -chdir=terraform init -input=false -lockfile=readonly
+      - run: terraform -chdir=terraform validate
+      - run: terraform -chdir=terraform test
+      - name: Credential-free speculative plan (never apply this artifact)
+        run: |
+          terraform -chdir=terraform plan -input=false -out=speculative.tfplan
+          terraform -chdir=terraform show -json speculative.tfplan > terraform/plan.json
+          terraform -chdir=terraform show -no-color speculative.tfplan > terraform/plan.txt
+          npm run test:network
+      - uses: actions/upload-artifact@v4
+        with:
+          name: speculative-plan-not-for-apply
+          path: |
+            devops-intern-otel-terraform-docker/terraform/plan.json
+            devops-intern-otel-terraform-docker/terraform/plan.txt

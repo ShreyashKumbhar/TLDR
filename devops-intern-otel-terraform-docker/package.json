@@ -8,10 +8,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "lint": "eslint src tests && tsc --noEmit -p tsconfig.test.json",
+    "lint": "eslint src tests scripts && tsc --noEmit -p tsconfig.test.json",
     "test": "jest --runInBand --coverage",
     "test:container": "node --test tests/container.test.mjs",
-    "test:network": "node scripts/check-plan.mjs"
+    "test:network": "node scripts/check-plan.mjs && node --test tests/plan-policy.test.mjs"
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.1",
