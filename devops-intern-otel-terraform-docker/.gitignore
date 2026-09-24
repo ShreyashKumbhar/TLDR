@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.terraform/
+*.tfstate*
+*.tfplan
+plan.json
+plan.txt
+*.tfvars
+!*.tfvars.example
+.env
+evidence/
