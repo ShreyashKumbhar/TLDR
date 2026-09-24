@@ -2,6 +2,42 @@
 
 TLDR is a microservices-based web application similar to Reddit, but specifically designed for news content. Users can browse, submit, and vote on concise news summaries that highlight key points with links to original articles. The platform enables community-curated, bite-sized news with quick, actionable insights.
 
+## Container API and integration tests
+
+The standalone `compose.api.yml` runs all seven API services using the root
+multi-stage `Dockerfile.api` (Java 17, non-root runtime). It requires Docker with
+Compose v2 or newer; Java, Maven, and Python are supplied by the images.
+Allow roughly 4 GB of memory for the stack. Existing `docker-compose.yml`
+remains a separate frontend/backend setup.
+
+```sh
+docker compose -f compose.api.yml up --build -d
+```
+
+The APIs are available on localhost ports 8081–8087, with summaries at
+`http://localhost:8082/api/summaries`. Containers use service names for internal
+HTTP calls. This development/test stack uses each service's in-memory H2
+database, so data resets when containers restart. No `.env` or external database
+is required, and outgoing email credentials are disabled.
+
+Run the integration suite in its own container on the same Docker network:
+
+```sh
+docker compose -f compose.api.yml --profile test up --build --abort-on-container-exit --exit-code-from integration-tests
+docker compose -f compose.api.yml --profile test down --volumes --remove-orphans
+```
+
+Stop any other stack occupying these ports before running this one. The test
+command exits nonzero on failure. Tests wait for real HTTP readiness, check all
+seven services, then exercise signup, JWT authentication, summary creation,
+retrieval, listing, deletion, and the resulting 404. The username assertion
+also verifies the summary service's HTTP lookup of the newly created user.
+There are no mocked servers or host-side API processes.
+
+`.github/workflows/container-integration.yml` builds the API images on pushes
+and pull requests, runs this same container-based suite, uploads container logs,
+and always tears down the stack.
+
 ## Features
 
 ### Core Features

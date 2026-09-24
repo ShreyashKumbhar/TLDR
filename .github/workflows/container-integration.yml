@@ -1,0 +1,36 @@
+name: Container integration tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  container-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      COMPOSE_FILE: compose.api.yml
+      COMPOSE_PROJECT_NAME: tldr-ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+      - name: Build API images
+        run: docker compose build
+      - name: Run HTTP integration tests against containers
+        run: docker compose --profile test up --abort-on-container-exit --exit-code-from integration-tests
+      - name: Save container logs
+        if: always()
+        run: docker compose --profile test logs --no-color > container-integration.log 2>&1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: container-integration-logs
+          path: container-integration.log
+      - name: Remove containers and volumes
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans

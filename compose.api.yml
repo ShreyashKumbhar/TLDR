@@ -1,0 +1,84 @@
+# Standalone API stack; does not require the root .env or an external database.
+x-api: &api
+  environment:
+    JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70
+    SPRING_DATASOURCE_URL: jdbc:h2:mem:tldr
+    SPRING_H2_CONSOLE_ENABLED: "false"
+    SPRING_JPA_SHOW_SQL: "false"
+    SPRING_MAIL_HOST: localhost
+    SPRING_MAIL_USERNAME: ""
+    SPRING_MAIL_PASSWORD: ""
+  mem_limit: 512m
+
+services:
+  user-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: user-service
+    ports: ["127.0.0.1:8081:8081"]
+  summary-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: summary-service
+    ports: ["127.0.0.1:8082:8082"]
+  vote-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: vote-service
+    ports: ["127.0.0.1:8083:8083"]
+  comment-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: comment-service
+    ports: ["127.0.0.1:8084:8084"]
+  saved-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: saved-service
+    ports: ["127.0.0.1:8085:8085"]
+  recommendation-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: recommendation-service
+    ports: ["127.0.0.1:8086:8086"]
+  circle-service:
+    <<: *api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args:
+        SERVICE: circle-service
+    ports: ["127.0.0.1:8087:8087"]
+  integration-tests:
+    image: python:3.12-alpine
+    profiles: [test]
+    working_dir: /tests
+    volumes:
+      - ./tests/integration:/tests:ro
+    command: [python, -B, -m, unittest, discover, -v, -s, ., -p, "test_*.py"]
+    depends_on:
+      - user-service
+      - summary-service
+      - vote-service
+      - comment-service
+      - saved-service
+      - recommendation-service
+      - circle-service
