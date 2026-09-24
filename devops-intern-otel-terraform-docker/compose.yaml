@@ -1,0 +1,31 @@
+name: devops-intern-evidence
+services:
+  api:
+    build: .
+    image: devops-intern-api:local
+    ports: ["127.0.0.1:3000:3000"]
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/json
+      OTEL_BSP_SCHEDULE_DELAY: "500"
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    init: true
+    depends_on: [collector]
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes: ["./observability/collector.yaml:/etc/otelcol/config.yaml:ro"]
+    depends_on: [jaeger]
+  jaeger:
+    image: jaegertracing/all-in-one:1.65.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["127.0.0.1:16686:16686"]
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    volumes: ["./observability/prometheus.yaml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["127.0.0.1:9090:9090"]
+    depends_on: [api, collector]

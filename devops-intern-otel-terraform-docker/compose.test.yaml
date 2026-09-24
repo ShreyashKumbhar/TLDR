@@ -1,0 +1,28 @@
+services:
+  api:
+    environment:
+      ENABLE_DEMO_ERRORS: "true"
+      SENTRY_DSN: http://public@evidence:4318/1
+  collector:
+    volumes: ["./observability/collector.test.yaml:/etc/otelcol/config.yaml:ro"]
+    depends_on: [evidence]
+  evidence:
+    image: node:24-bookworm-slim
+    user: node
+    working_dir: /work
+    command: ["node", "tests/receiver.mjs"]
+    volumes: ["./tests:/work/tests:ro"]
+  integration:
+    image: node:24-bookworm-slim
+    user: node
+    working_dir: /work
+    command: ["node", "--test", "tests/container.test.mjs"]
+    environment:
+      BASE_URL: http://api:3000
+      EVIDENCE_URL: http://evidence:4318
+      PROMETHEUS_URL: http://prometheus:9090
+    volumes: ["./tests:/work/tests:ro"]
+    depends_on:
+      api: { condition: service_healthy }
+      evidence: { condition: service_started }
+      prometheus: { condition: service_started }

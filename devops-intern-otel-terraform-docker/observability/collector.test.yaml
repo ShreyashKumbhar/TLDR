@@ -1,0 +1,18 @@
+receivers:
+  otlp:
+    protocols:
+      http: { endpoint: "0.0.0.0:4318" }
+processors:
+  batch: { timeout: 1s }
+exporters:
+  otlphttp/evidence:
+    endpoint: http://evidence:4318
+    encoding: json
+    compression: none
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+service:
+  pipelines:
+    traces: { receivers: [otlp], processors: [batch], exporters: [otlphttp/evidence] }
+    metrics: { receivers: [otlp], processors: [batch], exporters: [otlphttp/evidence, prometheus] }
+    logs: { receivers: [otlp], processors: [batch], exporters: [otlphttp/evidence] }
